@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q4*uf_1+9p0u9=3*_ktc-tr@5lbmi4$l73zztvs(7o!yxadw(z'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['3.144.3.186']
 
 
 # Application definition
@@ -43,14 +43,15 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'combotBaselineBE.urls'
@@ -79,13 +80,17 @@ WSGI_APPLICATION = 'combotBaselineBE.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'postgres',  # Use the database name you created in DBeaver
+    #     'USER': 'admin',  # Use the user you created, or 'postgres' if you skipped this step
+    #     'PASSWORD': 'postgres',
+    #     'HOST': 'database-2.clss86m2c38p.us-west-1.rds.amazonaws.com',  # Or the IP address of your database server
+    #     'PORT': '5432',  # The default port for PostgreSQL
+    # }
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',  # Use the database name you created in DBeaver
-        'USER': 'postgres',  # Use the user you created, or 'postgres' if you skipped this step
-        'PASSWORD': 'password123',
-        'HOST': 'database-1.cdok8yuciiq6.us-east-2.rds.amazonaws.com',  # Or the IP address of your database server
-        'PORT': '5432',  # The default port for PostgreSQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

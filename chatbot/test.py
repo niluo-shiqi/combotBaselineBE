@@ -37,15 +37,10 @@ class ChatAPIView(APIView):
             if conversation_index == 0:
                 os.environ["TRANSFORMERS_CACHE"] = "./cache"  # Optional, for local storage
                 os.environ["USE_TF"] = "0"  # Disable TensorFlow
-                classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier", from_pt=True)
                 class_response = classifier(user_input)[0]
                 class_type = class_response["label"]
                 confidence = class_response["score"]
-                
-                # Update the scenario with the actual problem type from classifier
-                scenario['problem_type'] = class_type
-                request.session['scenario'] = scenario
-                
                 if class_type == "Other":
                     conversation_index += 10
                 chat_response = self.question_initial_response(class_type, user_input, scenario)
@@ -66,8 +61,8 @@ class ChatAPIView(APIView):
 
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response(scenario)
-        elif conversation_index == 6:              
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+        elif conversation_index == 6:
+            chat_response = self.save_conversation(user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
             chat_response = " "
@@ -210,7 +205,11 @@ class ChatAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot. Based on the chat log below, provide a response that is unhelpful, boring, or frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Your response should be something that would make the customer want to continue the conversation out of frustration. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "I am going to supply you a chat log. Add only the next response as " +
+                                                           "though you are boring to talk to. The premise is that you are an " +
+                                                           "unhelpful customer service chat bot. Whatever your response is, " +
+                                                           "make it a response that the customer will want to reply to. You" +
+                                                           "can make your response a question or a statement. " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"')
@@ -255,9 +254,9 @@ class ChatAPIView(APIView):
             messages=[{"role": "assistant", "content": "Pretend you're a customer service bot. Paraphrase what I am about to say in the next sentence" +
                                                        "then ask me to elaborate or how I wish to resolve this issue." + user_input}],
         )
-        return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "456!"
+        return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "123!"
 
-    def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
+    def save_conversation(self, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
         conversation = Conversation(
             email=email,
@@ -267,8 +266,7 @@ class ChatAPIView(APIView):
             test_type=scenario['brand'],
             problem_type=scenario['problem_type'],
             think_level=scenario['think_level'],
-            feel_level=scenario['feel_level'],
-            
+            feel_level=scenario['feel_level']
         )
         conversation.save()
 
@@ -282,24 +280,26 @@ class ChatAPIView(APIView):
 
 class InitialMessageAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Use scenario from session (set by RandomEndpointAPIView)
-        scenario = request.session.get('scenario', {
-            'brand': 'Basic',
-            'problem_type': 'A',
-            'think_level': 'High',
-            'feel_level': 'High'
-        })
+        # For general endpoint, only use Basic brand
+        brand = "Basic"
+        problem_type = random.choice(["A", "B", "C"])
+        think_level = random.choice(["High", "Low"])
+        feel_level = random.choice(["High", "Low"])
         
         # Store the scenario assignment in the session
-        request.session['scenario'] = scenario
+        request.session['scenario'] = {
+            'brand': brand,
+            'problem_type': problem_type,
+            'think_level': think_level,
+            'feel_level': feel_level
+        }
         
         # Get the appropriate initial message based on brand and think level
-        brand = scenario['brand']
-        think_level = scenario['think_level']
 
+    
         if think_level == "High":
             initial_message = {
-                "message": "[Basic High]Hi there! I'm Combot, and it's great to meet you. I'm here to help with any product or " +
+                "message": "[Basic high endpoint]Hi there! I'm Combot, and it's great to meet you. I'm here to help with any product or " +
                             "service problems you may have encountered in the past few months. This could include issues like " +
                             "a defective product, a delayed package, or a rude employee. My goal is to provide you with the best " +
                             "guidance to resolve your issue. Please start by recounting your bad experiences with as many " +
@@ -309,7 +309,7 @@ class InitialMessageAPIView(APIView):
             }
         elif think_level == "Low":
             initial_message = {
-                "message": "[Basic Low]The purpose of Combot is to assist you with any product or service problems you have " +
+                "message": "[Basic low endpoint]The purpose of Combot is to assist you with any product or service problems you have " +
                             "experienced in the past few months. Examples of issues include defective products, delayed packages, or " +
                             "rude frontline employees. Combot is designed to provide optimal guideance to resolve your issue. " +
                             "Please provide a detailed account of your negative experiences, including when, how, and what occured. " +
@@ -322,9 +322,9 @@ class InitialMessageAPIView(APIView):
             "message": initial_message['message'],
             "scenario": {
                 "brand": brand,
-                "problem_type": scenario['problem_type'],
+                "problem_type": problem_type,
                 "think_level": think_level,
-                "feel_level": scenario['feel_level']
+                "feel_level": feel_level
             }
         }
 
@@ -343,40 +343,41 @@ class ClosingMessageAPIView(APIView):
 
 class LuluInitialMessageAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Use scenario from session (set by RandomEndpointAPIView)
-        scenario = request.session.get('scenario', {
-            'brand': 'Lulu',
-            'problem_type': 'A',
-            'think_level': 'High',
-            'feel_level': 'High'
-        })
+        # For general endpoint, only use Basic brand
+        brand = "Lulu"
+        problem_type = random.choice(["A", "B", "C"])
+        think_level = random.choice(["High", "Low"])
+        feel_level = random.choice(["High", "Low"])
         
         # Store the scenario assignment in the session
-        request.session['scenario'] = scenario
-        
-        think_level = scenario['think_level']
-        
+        request.session['scenario'] = {
+            'brand': brand,
+            'problem_type': problem_type,
+            'think_level': think_level,
+            'feel_level': feel_level
+        }
         if think_level == "High":
             initial_message = {
-                "message": "[LULU High] Hi there! I'm Lululemon's Combot, and it's great to meet you. I'm here to help with any product or " +
-                           "service problems you may have encountered in the past few months. My goal is to make sure you receive " +
-                           "the best guidance from me. Let's work together to resolve your issue!"
+                "message": "[LULU ENDPOINT] Hi there! I'm Combot, and it's great to meet you. I'm here to help with any product or " +
+                            "service problems you may have encountered in the past few months. My goal is to make sure you receive " +
+                            "the best guidance from me. Let's work together to resolve your issue!"
             }
         elif think_level == "Low":
             initial_message = {
-                "message": "[LULU Low] The purpose of Lululemon's Combot is to assist with resolution of product/service problems. " +
-                           "If you have experienced any issues in the past few months, Combot is designed to guide you through " +
-                           "finding the optimal solution."
+                "message": "[LULU ENDPOINT] The purpose of Combot is to assist with resolution of product/service problems. " +
+                            "If you have experienced any issues in the past few months, Combot is designed to guide you through " +
+                            "finding the optimal solution."
             }
+
 
         # Include all scenario information in the response
         response_data = {
             "message": initial_message['message'],
             "scenario": {
-                "brand": scenario['brand'],
-                "problem_type": scenario['problem_type'],
-                "think_level": scenario['think_level'],
-                "feel_level": scenario['feel_level']
+                "brand": brand,
+                "problem_type": problem_type,
+                "think_level": think_level,
+                "feel_level": feel_level
             }
         }
         return Response(response_data)
@@ -405,25 +406,14 @@ class LuluAPIView(APIView):
 
         if conversation_index in (0, 1, 2, 3, 4):
             if conversation_index == 0:
-                classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier", from_pt=True)
                 class_response = classifier(user_input)[0]
                 class_type = class_response["label"]
                 confidence = class_response["score"]
-                
-                # Get scenario from session and update with actual problem type
-                scenario = request.session.get('scenario', {
-                    'brand': 'Lulu',
-                    'problem_type': 'A',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                })
-                scenario['problem_type'] = class_type
-                request.session['scenario'] = scenario
-                
                 if class_type == "Other":
                     conversation_index += 10
                 chat_response = self.question_initial_response(class_type, user_input)
-                message_type = scenario['think_level']
+                message_type = "High"
                 if chat_response.startswith("Paraphrased: "):
                     message_type = "Low"
                     chat_response = chat_response[len("Paraphrased: "):]
@@ -444,18 +434,7 @@ class LuluAPIView(APIView):
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response()
         elif conversation_index == 6:
-            # Get scenario from session
-            scenario = request.session.get('scenario')
-            if not scenario:
-                # Fallback scenario if session is lost
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': 'A',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                }
-            print(f"DEBUG: Saving conversation with scenario: {scenario}")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+            chat_response = self.save_conversation(user_input, time_spent, chat_log, message_type_log)
             message_type = " "
         else:
             chat_response = " "
@@ -507,9 +486,9 @@ class LuluAPIView(APIView):
         elif class_type == "Other":
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint back to them, ask them if its correct, then ask them to provide more information. Here's the complaint: " + user_input}],
+                messages=[{"role": "assistant", "content": "You are a customer service bot. Paraphrase the following customer complaint back to them then ask them to provide more information. Here's the complaint: " + user_input}],
             )
-            chat_response = completion["choices"][0]["message"]["content"] + "bark"
+            chat_response = completion["choices"][0]["message"]["content"] + "woof"
 
         return chat_response
 
@@ -552,10 +531,14 @@ class LuluAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Based on the chat log below, provide a response that is unhelpful, boring, or frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Your response should be something that would make the customer want to continue the conversation out of frustration. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "I am going to supply you a chat log. Add only the next response as " +
+                                                           "though you are boring to talk to. The premise is that you are an " +
+                                                           "unhelpful customer service chat bot. Whatever your response is, " +
+                                                           "make it a response that the customer will want to reply to. You" +
+                                                           "can make your response a question or a statement. " +
                                                            chat_logs_string}]
             )
-            clean_content = completion["choices"][0]["message"]["content"].strip('"') + "meow123"
+            clean_content = completion["choices"][0]["message"]["content"].strip('"')
             return clean_content
         except Exception as e:
             print(f"An error occurred: {e}")
@@ -581,115 +564,60 @@ class LuluAPIView(APIView):
     def conversation_index_10_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint, ask if its correct, then ask them to provide more information. Here's the complaint: " + user_input}]
+            messages=[{"role": "assistant", "content": "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: " + user_input}],
         )
-        return completion["choices"][0]["message"]["content"] + "hiss"
+        return completion["choices"][0]["message"]["content"] + "woof"
 
     def paraphrase_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "Pretend you're a customer service bot for Lululemon. Paraphrase what the user is saying, ask if its correct," +
-                                                       "then ask to elaborate or how they wish to resolve this issue." + user_input}]
+            messages=[{"role": "assistant", "content": "Pretend you're a customer service bot. Paraphrase what I am about to say in the next sentence" +
+                                                       "then ask me to elaborate or I wish to resolve this issue." + user_input}],
         )
         return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "123!"
 
-    def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
-        # Save the conversation with all scenario information
-        conversation = Conversation(
+    def save_conversation(self, email, time_spent, chat_log, message_type_log):
+        # Get the endpoint type from session
+        endpoint_type = request.session.get('endpoint_type', 'lulu')
+        
+        conversation = Conversation.objects.create(
             email=email,
             time_spent=time_spent,
             chat_log=chat_log,
             message_type_log=message_type_log,
-            test_type=scenario['brand'],
-            problem_type=scenario['problem_type'],
-            think_level=scenario['think_level'],
-            feel_level=scenario['feel_level'],
-            
+            test_type="Lulu",
+            problem_type="A",
+            think_level="High",
+            feel_level="High",
+            endpoint_type=endpoint_type
         )
-        conversation.save()
-
-        html_message = mark_safe(
-            "Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: "
-            "<a href='https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE' target='_blank' rel='noopener noreferrer'>Survey Link</a>."
-        )
-
-        return html_message
-        
+        return "Thank you for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email below..."
 
 
 class RandomEndpointAPIView(APIView):
     def get(self, request, *args, **kwargs):
-        # Check if this is a reset request
-        if request.path.endswith('/reset/'):
-            # Clear the session
-            request.session.flush()
-            return Response({"message": "Session cleared successfully"})
-        
         # Get the path to determine which endpoint this is
         path = request.path
         
         if path.endswith('/initial/'):
-            # Handle initial message request - 4-way random choice
-            choices = ['general_high', 'general_low', 'lulu_high', 'lulu_low']
-            choice = random.choice(choices)
-            request.session['endpoint_type'] = choice
-            print(f"DEBUG: Random choice selected: {choice} from options: {choices}")
-            print(f"DEBUG: This should be 25% chance for each option")
+            # Handle initial message request
+            endpoint_type = random.choice(['general', 'lulu'])
+            request.session['endpoint_type'] = endpoint_type
             
-            if choice == 'general_high':
-                # Use the general initial message view with high think level
-                scenario = {
-                    'brand': 'Basic',
-                    'problem_type': random.choice(["A", "B", "C"]),
-                    'think_level': 'High',
-                    'feel_level': random.choice(["High", "Low"])
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for general_high: {scenario}")
+            if endpoint_type == 'general':
+                # Use the general initial message view
                 initial_view = InitialMessageAPIView()
                 return initial_view.get(request, *args, **kwargs)
-            elif choice == 'general_low':
-                # Use the general initial message view with low think level
-                scenario = {
-                    'brand': 'Basic',
-                    'problem_type': '',
-                    'think_level': 'Low',
-                    'feel_level': random.choice(["High", "Low"])
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for general_low: {scenario}")
-                initial_view = InitialMessageAPIView()
-                return initial_view.get(request, *args, **kwargs)
-            elif choice == 'lulu_high':
-                # Use the Lulu initial message view with high think level
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': '',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for lulu_high: {scenario}")
-                lulu_initial_view = LuluInitialMessageAPIView()
-                return lulu_initial_view.get(request, *args, **kwargs)
-            else:  # lulu_low
-                # Use the Lulu initial message view with low think level
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': random.choice(["A", "B", "C"]),
-                    'think_level': 'Low',
-                    'feel_level': 'Low'
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for lulu_low: {scenario}")
+            else:
+                # Use the Lulu initial message view
                 lulu_initial_view = LuluInitialMessageAPIView()
                 return lulu_initial_view.get(request, *args, **kwargs)
         
         elif path.endswith('/closing/'):
             # Handle closing message request
-            endpoint_type = request.session.get('endpoint_type', 'general_high')
+            endpoint_type = request.session.get('endpoint_type', 'general')
             
-            if 'lulu' in endpoint_type:
+            if endpoint_type == 'lulu':
                 # Use the Lulu closing message view
                 lulu_closing_view = LuluClosingMessageAPIView()
                 return lulu_closing_view.get(request, *args, **kwargs)
@@ -700,20 +628,19 @@ class RandomEndpointAPIView(APIView):
         
         else:
             # Handle main endpoint request
-            endpoint_type = random.choice(['general_high', 'general_low', 'lulu_high', 'lulu_low'])
+            endpoint_type = random.choice(['general', 'lulu'])
             request.session['endpoint_type'] = endpoint_type
-            print(f"DEBUG: Main endpoint random choice selected: {endpoint_type}")
             
             return Response({
-                "endpoint": f"/api/random/",
+                "endpoint": f"/api/{endpoint_type}/",
                 "endpoint_type": endpoint_type
             })
 
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
-        endpoint_type = request.session.get('endpoint_type', 'general_high')
+        endpoint_type = request.session.get('endpoint_type', 'general')
         
-        if 'lulu' in endpoint_type:
+        if endpoint_type == 'lulu':
             # Use the Lulu API view
             lulu_view = LuluAPIView()
             return lulu_view.post(request, *args, **kwargs)

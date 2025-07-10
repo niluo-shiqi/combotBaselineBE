@@ -36,18 +36,23 @@ class ChatAPIView(APIView):
         class_type = data.get('classType', '')
         message_type_log = data.get('messageTypeLog', '')
         
-        # Get the scenario information from the session
+        # Get the scenario information from the session or request data
         scenario = request.session.get('scenario')
-        if scenario:
-            print(f"DEBUG: Retrieved scenario from session: {scenario}")
+        if not scenario:
+            # Try to get scenario from request data (frontend fallback)
+            scenario = data.get('scenario')
+            if scenario:
+                print(f"DEBUG: Retrieved scenario from request data: {scenario}")
+            else:
+                print(f"DEBUG: No scenario in session or request data, using fallback")
+                scenario = {
+                    'brand': 'Basic',
+                    'problem_type': 'A',
+                    'think_level': 'High',
+                    'feel_level': 'High'
+                }
         else:
-            print(f"DEBUG: No scenario in session, using fallback")
-            scenario = {
-                'brand': 'Basic',
-                'problem_type': 'A',
-                'think_level': 'High',
-                'feel_level': 'High'
-            }
+            print(f"DEBUG: Retrieved scenario from session: {scenario}")
 
         if conversation_index in (0, 1, 2, 3, 4):
             if conversation_index == 0:
@@ -431,13 +436,20 @@ class LuluAPIView(APIView):
         # Get scenario from session - ensure it's always available
         scenario = request.session.get('scenario')
         if not scenario:
-            print(f"DEBUG: No scenario in session (Lulu), using fallback")
-            scenario = {
-                'brand': 'Lulu',
-                'problem_type': 'A',
-                'think_level': 'High',
-                'feel_level': 'High'
-            }
+            # Try to get scenario from request data (frontend fallback)
+            scenario = data.get('scenario')
+            if scenario:
+                print(f"DEBUG: Retrieved scenario from request data (Lulu): {scenario}")
+            else:
+                print(f"DEBUG: No scenario in session or request data (Lulu), using fallback")
+                scenario = {
+                    'brand': 'Lulu',
+                    'problem_type': 'A',
+                    'think_level': 'High',
+                    'feel_level': 'High'
+                }
+        else:
+            print(f"DEBUG: Retrieved scenario from session (Lulu): {scenario}")
 
         if conversation_index in (0, 1, 2, 3, 4):
             if conversation_index == 0:
@@ -485,7 +497,10 @@ class LuluAPIView(APIView):
             message_type = " "
 
         conversation_index += 1
-        return Response({"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}, status=status.HTTP_200_OK)
+        response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
+        # Add scenario to response for frontend to send back
+        response_data['scenario'] = scenario
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def question_initial_response(self, class_type, user_input):
 
@@ -819,4 +834,8 @@ class RandomEndpointAPIView(APIView):
         else:
             # Use the general API view
             general_view = ChatAPIView()
-            return general_view.post(request, *args, **kwargs)
+            response = general_view.post(request, *args, **kwargs)
+            # Add scenario to response for frontend to send back
+            if hasattr(response, 'data'):
+                response.data['scenario'] = scenario
+            return response

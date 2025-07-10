@@ -251,7 +251,7 @@ class ChatAPIView(APIView):
 
     def understanding_statement_response(self, scenario):
         feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect."
-        feel_response_low = ""
+        feel_response_low = "I see. Let me check what we can do about this."
 
         # Use the feel_level from the scenario
         feel_response = feel_response_high if scenario['feel_level'] == "High" else feel_response_low
@@ -472,7 +472,7 @@ class LuluAPIView(APIView):
                     message_type = " "
 
         elif conversation_index == 5:
-            chat_response, message_type = self.understanding_statement_response()
+            chat_response, message_type = self.understanding_statement_response(scenario)
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 6 (Lulu)")
@@ -605,11 +605,15 @@ class LuluAPIView(APIView):
         if updated_response_options:  # Ensure the list is not empty
             return random.choice(updated_response_options)
 
-    def understanding_statement_response(self):
-        understanding_statement = "I understand your situation and I want to help you resolve this issue. " + \
-                                 "I have gathered all the necessary information to provide you with the best possible solution. " + \
-                                 "Let me work on finding the most appropriate resolution for your case."
-        return understanding_statement, "Understanding"
+    def understanding_statement_response(self, scenario):
+        feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect."
+        feel_response_low = "I see. Let me check what we can do about this."
+
+        # Use the feel_level from the scenario
+        feel_response = feel_response_high if scenario['feel_level'] == "High" else feel_response_low
+        message_type = scenario['feel_level']
+
+        return feel_response, message_type
 
     def conversation_index_10_response(self, user_input):
         completion = openai.ChatCompletion.create(
@@ -780,7 +784,14 @@ class RandomEndpointAPIView(APIView):
             print(f"DEBUG: POST request - scenario found in session: {scenario}")
         else:
             print(f"DEBUG: POST request - no scenario in session, endpoint_type is: {endpoint_type}")
-            # Set up scenario based on endpoint_type if it doesn't exist
+            
+            # If endpoint_type is still the default, randomly select one
+            if endpoint_type == 'general_hight_highf':
+                endpoint_type = random.choice(['general_hight_highf', 'general_hight_lowf', 'general_lowt_highf', 'general_lowt_lowf', 'lulu_hight_highf', 'lulu_hight_lowf', 'lulu_lowt_highf', 'lulu_lowt_lowf'])
+                request.session['endpoint_type'] = endpoint_type
+                print(f"DEBUG: POST request - randomly selected endpoint_type: {endpoint_type}")
+            
+            # Set up scenario based on endpoint_type
             scenario = {
                 'problem_type': "not yet assigned"
             }
@@ -807,8 +818,9 @@ class RandomEndpointAPIView(APIView):
             else:
                 scenario['think_level'] = 'High'  # default
             
-            # Store scenario in session
+            # Store scenario in session and force save
             request.session['scenario'] = scenario
+            request.session.modified = True  # Force session save
             print(f"DEBUG: POST request - created scenario: {scenario}")
         
         if 'lulu' in endpoint_type:

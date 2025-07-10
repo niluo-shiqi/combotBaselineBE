@@ -777,6 +777,7 @@ class RandomEndpointAPIView(APIView):
         # Handle POST requests (main chat functionality)
         endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
         print(f"DEBUG: POST request - retrieved endpoint_type from session: {endpoint_type}")
+        print(f"DEBUG: POST request - session keys: {list(request.session.keys())}")
         
         # Check if scenario exists in session
         scenario = request.session.get('scenario')
@@ -785,11 +786,10 @@ class RandomEndpointAPIView(APIView):
         else:
             print(f"DEBUG: POST request - no scenario in session, endpoint_type is: {endpoint_type}")
             
-            # If endpoint_type is still the default, randomly select one
-            if endpoint_type == 'general_hight_highf':
-                endpoint_type = random.choice(['general_hight_highf', 'general_hight_lowf', 'general_lowt_highf', 'general_lowt_lowf', 'lulu_hight_highf', 'lulu_hight_lowf', 'lulu_lowt_highf', 'lulu_lowt_lowf'])
-                request.session['endpoint_type'] = endpoint_type
-                print(f"DEBUG: POST request - randomly selected endpoint_type: {endpoint_type}")
+            # Always randomly select endpoint_type on first request (when no scenario exists)
+            endpoint_type = random.choice(['general_hight_highf', 'general_hight_lowf', 'general_lowt_highf', 'general_lowt_lowf', 'lulu_hight_highf', 'lulu_hight_lowf', 'lulu_lowt_highf', 'lulu_lowt_lowf'])
+            request.session['endpoint_type'] = endpoint_type
+            print(f"DEBUG: POST request - randomly selected endpoint_type: {endpoint_type}")
             
             # Set up scenario based on endpoint_type
             scenario = {
@@ -822,6 +822,7 @@ class RandomEndpointAPIView(APIView):
             request.session['scenario'] = scenario
             request.session.modified = True  # Force session save
             print(f"DEBUG: POST request - created scenario: {scenario}")
+            print(f"DEBUG: POST request - session keys after setting: {list(request.session.keys())}")
         
         if 'lulu' in endpoint_type:
             # Use the Lulu API view

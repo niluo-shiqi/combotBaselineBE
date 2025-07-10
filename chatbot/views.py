@@ -780,7 +780,7 @@ class RandomEndpointAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
-        endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
+        endpoint_type = request.session.get('endpoint_type')
         print(f"DEBUG: POST request - retrieved endpoint_type from session: {endpoint_type}")
         
         # Get scenario from session - if it doesn't exist, that's a problem

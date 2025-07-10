@@ -37,12 +37,17 @@ class ChatAPIView(APIView):
         message_type_log = data.get('messageTypeLog', '')
         
         # Get the scenario information from the session
-        scenario = request.session.get('scenario', {
-            'brand': 'Basic',
-            'problem_type': 'A',
-            'think_level': 'High',
-            'feel_level': 'High'
-        })
+        scenario = request.session.get('scenario')
+        if scenario:
+            print(f"DEBUG: Retrieved scenario from session: {scenario}")
+        else:
+            print(f"DEBUG: No scenario in session, using fallback")
+            scenario = {
+                'brand': 'Basic',
+                'problem_type': 'A',
+                'think_level': 'High',
+                'feel_level': 'High'
+            }
 
         if conversation_index in (0, 1, 2, 3, 4):
             if conversation_index == 0:
@@ -431,12 +436,17 @@ class LuluAPIView(APIView):
                 confidence = class_response["score"]
                 
                 # Get scenario from session and update with actual problem type
-                scenario = request.session.get('scenario', {
-                    'brand': 'Lulu',
-                    'problem_type': 'A',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                })
+                scenario = request.session.get('scenario')
+                if scenario:
+                    print(f"DEBUG: Retrieved scenario from session (Lulu): {scenario}")
+                else:
+                    print(f"DEBUG: No scenario in session (Lulu), using fallback")
+                    scenario = {
+                        'brand': 'Lulu',
+                        'problem_type': 'A',
+                        'think_level': 'High',
+                        'feel_level': 'High'
+                    }
                 scenario['problem_type'] = class_type
                 request.session['scenario'] = scenario
                 
@@ -694,6 +704,7 @@ class RandomEndpointAPIView(APIView):
             # Store scenario in session
             request.session['scenario'] = scenario
             print(f"DEBUG: Set scenario for {choice}: {scenario}")
+            print(f"DEBUG: Session scenario after setting: {request.session.get('scenario')}")
             
             # Route to appropriate initial view
             if scenario['brand'] == 'Lulu':

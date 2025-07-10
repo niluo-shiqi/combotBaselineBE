@@ -66,7 +66,12 @@ class ChatAPIView(APIView):
 
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response(scenario)
-        elif conversation_index == 6:              
+        elif conversation_index == 6:
+            # Ask for email instead of saving conversation
+            chat_response = "THANK YOU for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email below..."
+            message_type = " "
+        elif conversation_index == 7:
+            # Save conversation after user provides email
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
@@ -259,6 +264,7 @@ class ChatAPIView(APIView):
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
+        print(f"DEBUG: Saving conversation with scenario: {scenario}")
         conversation = Conversation(
             email=email,
             time_spent=time_spent,
@@ -283,15 +289,16 @@ class ChatAPIView(APIView):
 class InitialMessageAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Use scenario from session (set by RandomEndpointAPIView)
-        scenario = request.session.get('scenario', {
-            'brand': 'Basic',
-            'problem_type': 'A',
-            'think_level': 'High',
-            'feel_level': 'High'
-        })
-        
-        # Store the scenario assignment in the session
-        request.session['scenario'] = scenario
+        scenario = request.session.get('scenario')
+        if not scenario:
+            # Only use fallback if session is completely lost
+            scenario = {
+                'brand': 'Basic',
+                'problem_type': 'A',
+                'think_level': 'High',
+                'feel_level': 'High'
+            }
+            request.session['scenario'] = scenario
         
         # Get the appropriate initial message based on brand and think level
         brand = scenario['brand']
@@ -344,15 +351,16 @@ class ClosingMessageAPIView(APIView):
 class LuluInitialMessageAPIView(APIView):
     def get(self, request, *args, **kwargs):
         # Use scenario from session (set by RandomEndpointAPIView)
-        scenario = request.session.get('scenario', {
-            'brand': 'Lulu',
-            'problem_type': 'A',
-            'think_level': 'High',
-            'feel_level': 'High'
-        })
-        
-        # Store the scenario assignment in the session
-        request.session['scenario'] = scenario
+        scenario = request.session.get('scenario')
+        if not scenario:
+            # Only use fallback if session is completely lost
+            scenario = {
+                'brand': 'Lulu',
+                'problem_type': 'A',
+                'think_level': 'High',
+                'feel_level': 'High'
+            }
+            request.session['scenario'] = scenario
         
         think_level = scenario['think_level']
         
@@ -444,6 +452,11 @@ class LuluAPIView(APIView):
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response()
         elif conversation_index == 6:
+            # Ask for email instead of saving conversation
+            chat_response = "THANK YOU for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email address below..."
+            message_type = " "
+        elif conversation_index == 7:
+            # Save conversation after user provides email
             # Get scenario from session
             scenario = request.session.get('scenario')
             if not scenario:
@@ -629,65 +642,57 @@ class RandomEndpointAPIView(APIView):
         path = request.path
         
         if path.endswith('/initial/'):
-            # Handle initial message request - 4-way random choice
-            choices = ['general_high', 'general_low', 'lulu_high', 'lulu_low']
+            # Handle initial message request - 8-way random choice
+            choices = ['general_hight_lowf', 'general_lowt_lowf', 'lulu_hight_lowf', 'lulu_lowt_lowf', 'general_hight_highf', 'general_lowt_highf', 'lulu_hight_highf', 'lulu_lowt_highf']
             choice = random.choice(choices)
             request.session['endpoint_type'] = choice
             print(f"DEBUG: Random choice selected: {choice} from options: {choices}")
-            print(f"DEBUG: This should be 25% chance for each option")
+            print(f"DEBUG: This should be 12.5% chance for each option (8 total options)")
             
-            if choice == 'general_high':
-                # Use the general initial message view with high think level
-                scenario = {
-                    'brand': 'Basic',
-                    'problem_type': random.choice(["A", "B", "C"]),
-                    'think_level': 'High',
-                    'feel_level': random.choice(["High", "Low"])
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for general_high: {scenario}")
-                initial_view = InitialMessageAPIView()
-                return initial_view.get(request, *args, **kwargs)
-            elif choice == 'general_low':
-                # Use the general initial message view with low think level
-                scenario = {
-                    'brand': 'Basic',
-                    'problem_type': '',
-                    'think_level': 'Low',
-                    'feel_level': random.choice(["High", "Low"])
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for general_low: {scenario}")
-                initial_view = InitialMessageAPIView()
-                return initial_view.get(request, *args, **kwargs)
-            elif choice == 'lulu_high':
-                # Use the Lulu initial message view with high think level
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': '',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for lulu_high: {scenario}")
+            # Initialize scenario with default values
+            scenario = {
+                'problem_type': "not yet assigned"
+            }
+            
+            # Set brand based on choice
+            if "general" in choice:
+                scenario['brand'] = 'Basic'
+            elif "lulu" in choice:
+                scenario['brand'] = 'Lulu'
+            else:
+                scenario['brand'] = 'Basic'
+            
+            # Set feel level based on choice
+            if "lowf" in choice:
+                scenario['feel_level'] = 'Low'
+            elif "highf" in choice:
+                scenario['feel_level'] = 'High'
+            else:
+                scenario['feel_level'] = 'High'  # default
+            
+            # Set think level based on choice
+            if "lowt" in choice:
+                scenario['think_level'] = 'Low'
+            elif "hight" in choice:
+                scenario['think_level'] = 'High'
+            else:
+                scenario['think_level'] = 'High'  # default
+            
+            # Store scenario in session
+            request.session['scenario'] = scenario
+            print(f"DEBUG: Set scenario for {choice}: {scenario}")
+            
+            # Route to appropriate initial view
+            if scenario['brand'] == 'Lulu':
                 lulu_initial_view = LuluInitialMessageAPIView()
                 return lulu_initial_view.get(request, *args, **kwargs)
-            else:  # lulu_low
-                # Use the Lulu initial message view with low think level
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': random.choice(["A", "B", "C"]),
-                    'think_level': 'Low',
-                    'feel_level': 'Low'
-                }
-                request.session['scenario'] = scenario
-                print(f"DEBUG: Set scenario for lulu_low: {scenario}")
-                lulu_initial_view = LuluInitialMessageAPIView()
-                return lulu_initial_view.get(request, *args, **kwargs)
+            else:
+                initial_view = InitialMessageAPIView()
+                return initial_view.get(request, *args, **kwargs)
         
         elif path.endswith('/closing/'):
             # Handle closing message request
-            endpoint_type = request.session.get('endpoint_type', 'general_high')
+            endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
             
             if 'lulu' in endpoint_type:
                 # Use the Lulu closing message view
@@ -700,7 +705,7 @@ class RandomEndpointAPIView(APIView):
         
         else:
             # Handle main endpoint request
-            endpoint_type = random.choice(['general_high', 'general_low', 'lulu_high', 'lulu_low'])
+            endpoint_type = random.choice(['general_hight_highf', 'general_hight_lowf', 'general_lowt_highf', 'general_lowt_lowf', 'lulu_hight_highf', 'lulu_hight_lowf', 'lulu_lowt_highf', 'lulu_lowt_lowf'])
             request.session['endpoint_type'] = endpoint_type
             print(f"DEBUG: Main endpoint random choice selected: {endpoint_type}")
             
@@ -711,7 +716,7 @@ class RandomEndpointAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
-        endpoint_type = request.session.get('endpoint_type', 'general_high')
+        endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
         
         if 'lulu' in endpoint_type:
             # Use the Lulu API view

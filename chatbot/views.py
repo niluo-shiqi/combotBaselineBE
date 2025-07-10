@@ -4,6 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from transformers import pipeline
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
+from urllib.parse import quote
 from .models import Conversation
 from transformers import pipeline
 import random
@@ -13,6 +15,15 @@ import os
 
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+def create_safe_link(url, text):
+    """
+    Create a safe HTML link with proper URL escaping
+    """
+    escaped_url = quote(url, safe=':/?=&')
+    escaped_text = escape(text)
+    generated_html = f'<a href="{escaped_url}" target="_blank" rel="noopener noreferrer">{escaped_text}</a>'
+    return mark_safe(generated_html)
 
 class ChatAPIView(APIView):
 
@@ -68,13 +79,16 @@ class ChatAPIView(APIView):
             chat_response, message_type = self.understanding_statement_response(scenario)
         elif conversation_index == 6:
             # Ask for email instead of saving conversation
+            print(f"DEBUG: Asking for email at index 6")
             chat_response = "THANK YOU for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email below..."
             message_type = " "
         elif conversation_index == 7:
             # Save conversation after user provides email
+            print(f"DEBUG: Saving conversation at index 7")
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
+            # Conversation is complete, don't continue
             chat_response = " "
             message_type = " "
 
@@ -260,7 +274,7 @@ class ChatAPIView(APIView):
             messages=[{"role": "assistant", "content": "Pretend you're a customer service bot. Paraphrase what I am about to say in the next sentence" +
                                                        "then ask me to elaborate or how I wish to resolve this issue." + user_input}],
         )
-        return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "456!"
+        return "Paraphrased: " + completion["choices"][0]["message"]["content"] 
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
@@ -278,9 +292,12 @@ class ChatAPIView(APIView):
         )
         conversation.save()
 
+        # Create safe HTML link with proper escaping
+        survey_url = "https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE"
+        survey_link = create_safe_link(survey_url, "Survey Link")
+        
         html_message = mark_safe(
-            "Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: "
-            "<a href='https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE' target='_blank' rel='noopener noreferrer'>Survey Link</a>."
+            f"Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: {survey_link}"
         )
 
         return html_message
@@ -453,10 +470,12 @@ class LuluAPIView(APIView):
             chat_response, message_type = self.understanding_statement_response()
         elif conversation_index == 6:
             # Ask for email instead of saving conversation
+            print(f"DEBUG: Asking for email at index 6 (Lulu)")
             chat_response = "THANK YOU for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email address below..."
             message_type = " "
         elif conversation_index == 7:
             # Save conversation after user provides email
+            print(f"DEBUG: Saving conversation at index 7 (Lulu)")
             # Get scenario from session
             scenario = request.session.get('scenario')
             if not scenario:
@@ -471,6 +490,7 @@ class LuluAPIView(APIView):
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
+            # Conversation is complete, don't continue
             chat_response = " "
             message_type = " "
 
@@ -621,9 +641,12 @@ class LuluAPIView(APIView):
         )
         conversation.save()
 
+        # Create safe HTML link with proper escaping
+        survey_url = "https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE"
+        survey_link = create_safe_link(survey_url, "Survey Link")
+        
         html_message = mark_safe(
-            "Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: "
-            "<a href='https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE' target='_blank' rel='noopener noreferrer'>Survey Link</a>."
+            f"Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: {survey_link}"
         )
 
         return html_message

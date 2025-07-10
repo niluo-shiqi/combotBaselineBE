@@ -772,6 +772,44 @@ class RandomEndpointAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
         endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
+        print(f"DEBUG: POST request - retrieved endpoint_type from session: {endpoint_type}")
+        
+        # Check if scenario exists in session
+        scenario = request.session.get('scenario')
+        if scenario:
+            print(f"DEBUG: POST request - scenario found in session: {scenario}")
+        else:
+            print(f"DEBUG: POST request - no scenario in session, endpoint_type is: {endpoint_type}")
+            # Set up scenario based on endpoint_type if it doesn't exist
+            scenario = {
+                'problem_type': "not yet assigned"
+            }
+            
+            # Set brand based on endpoint_type
+            if "lulu" in endpoint_type:
+                scenario['brand'] = 'Lulu'
+            else:
+                scenario['brand'] = 'Basic'
+            
+            # Set feel level based on endpoint_type
+            if "lowf" in endpoint_type:
+                scenario['feel_level'] = 'Low'
+            elif "highf" in endpoint_type:
+                scenario['feel_level'] = 'High'
+            else:
+                scenario['feel_level'] = 'High'  # default
+            
+            # Set think level based on endpoint_type
+            if "lowt" in endpoint_type:
+                scenario['think_level'] = 'Low'
+            elif "hight" in endpoint_type:
+                scenario['think_level'] = 'High'
+            else:
+                scenario['think_level'] = 'High'  # default
+            
+            # Store scenario in session
+            request.session['scenario'] = scenario
+            print(f"DEBUG: POST request - created scenario: {scenario}")
         
         if 'lulu' in endpoint_type:
             # Use the Lulu API view

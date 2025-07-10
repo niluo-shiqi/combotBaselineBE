@@ -224,7 +224,7 @@ class ChatAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot. Based on the chat log below, provide a response that is unhelpful, boring, or frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Your response should be something that would make the customer want to continue the conversation out of frustration. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "You are a customer service bot. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Here's the chat log: " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"')
@@ -575,7 +575,7 @@ class LuluAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Based on the chat log below, provide a response that is unhelpful, boring, or frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Your response should be something that would make the customer want to continue the conversation out of frustration. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Speak with Lululemon-esque language. Ath the same time, based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Here's the chat log: " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"') + "meow123"
@@ -611,7 +611,7 @@ class LuluAPIView(APIView):
     def paraphrase_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "Pretend you're a customer service bot for Lululemon. Paraphrase what the user is saying, ask if its correct," +
+            messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase what the user is saying, ask if its correct," +
                                                        "then ask to elaborate or how they wish to resolve this issue." + user_input}]
         )
         return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "123!"

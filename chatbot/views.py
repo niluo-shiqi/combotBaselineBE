@@ -229,7 +229,7 @@ class ChatAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "You are a customer service bot. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"')
@@ -428,6 +428,17 @@ class LuluAPIView(APIView):
         class_type = data.get('classType', '')
         message_type_log = data.get('messageTypeLog', '')
 
+        # Get scenario from session - ensure it's always available
+        scenario = request.session.get('scenario')
+        if not scenario:
+            print(f"DEBUG: No scenario in session (Lulu), using fallback")
+            scenario = {
+                'brand': 'Lulu',
+                'problem_type': 'A',
+                'think_level': 'High',
+                'feel_level': 'High'
+            }
+
         if conversation_index in (0, 1, 2, 3, 4):
             if conversation_index == 0:
                 classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
@@ -435,18 +446,7 @@ class LuluAPIView(APIView):
                 class_type = class_response["label"]
                 confidence = class_response["score"]
                 
-                # Get scenario from session and update with actual problem type
-                scenario = request.session.get('scenario')
-                if scenario:
-                    print(f"DEBUG: Retrieved scenario from session (Lulu): {scenario}")
-                else:
-                    print(f"DEBUG: No scenario in session (Lulu), using fallback")
-                    scenario = {
-                        'brand': 'Lulu',
-                        'problem_type': 'A',
-                        'think_level': 'High',
-                        'feel_level': 'High'
-                    }
+                # Update the scenario with the actual problem type from classifier
                 scenario['problem_type'] = class_type
                 request.session['scenario'] = scenario
                 
@@ -476,16 +476,6 @@ class LuluAPIView(APIView):
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 6 (Lulu)")
-            # Get scenario from session
-            scenario = request.session.get('scenario')
-            if not scenario:
-                # Fallback scenario if session is lost
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': 'A',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                }
             print(f"DEBUG: Saving conversation with scenario: {scenario}")
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
@@ -585,7 +575,7 @@ class LuluAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Speak with Lululemon-esque language. Ath the same time, based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Make it clear that you are the customer service agent, not the customer. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"') + "meow123"
@@ -777,7 +767,6 @@ class RandomEndpointAPIView(APIView):
         # Handle POST requests (main chat functionality)
         endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
         print(f"DEBUG: POST request - retrieved endpoint_type from session: {endpoint_type}")
-        print(f"DEBUG: POST request - session keys: {list(request.session.keys())}")
         
         # Check if scenario exists in session
         scenario = request.session.get('scenario')
@@ -822,7 +811,6 @@ class RandomEndpointAPIView(APIView):
             request.session['scenario'] = scenario
             request.session.modified = True  # Force session save
             print(f"DEBUG: POST request - created scenario: {scenario}")
-            print(f"DEBUG: POST request - session keys after setting: {list(request.session.keys())}")
         
         if 'lulu' in endpoint_type:
             # Use the Lulu API view

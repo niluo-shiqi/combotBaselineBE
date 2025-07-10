@@ -780,8 +780,6 @@ class RandomEndpointAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
-        endpoint_type = request.session.get('endpoint_type')
-        print(f"DEBUG: POST request - retrieved endpoint_type from session: {endpoint_type}")
         
         # Get scenario from session - if it doesn't exist, that's a problem
         scenario = request.session.get('scenario')
@@ -797,7 +795,8 @@ class RandomEndpointAPIView(APIView):
                 'feel_level': 'High'
             }
         
-        if 'lulu' in endpoint_type:
+        # Use scenario brand to determine which view to use
+        if scenario['brand'] == 'Lulu':
             # Use the Lulu API view
             lulu_view = LuluAPIView()
             return lulu_view.post(request, *args, **kwargs)

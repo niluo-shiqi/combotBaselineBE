@@ -78,13 +78,8 @@ class ChatAPIView(APIView):
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response(scenario)
         elif conversation_index == 6:
-            # Ask for email instead of saving conversation
-            print(f"DEBUG: Asking for email at index 6")
-            chat_response = "THANK YOU for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email below..."
-            message_type = " "
-        elif conversation_index == 7:
             # Save conversation after user provides email
-            print(f"DEBUG: Saving conversation at index 7")
+            print(f"DEBUG: Saving conversation at index 6")
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
@@ -469,13 +464,8 @@ class LuluAPIView(APIView):
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response()
         elif conversation_index == 6:
-            # Ask for email instead of saving conversation
-            print(f"DEBUG: Asking for email at index 6 (Lulu)")
-            chat_response = "THANK YOU for sharing your experience with me! I will send you a set of comprehensive suggestions via email. Please provide your email address below..."
-            message_type = " "
-        elif conversation_index == 7:
             # Save conversation after user provides email
-            print(f"DEBUG: Saving conversation at index 7 (Lulu)")
+            print(f"DEBUG: Saving conversation at index 6 (Lulu)")
             # Get scenario from session
             scenario = request.session.get('scenario')
             if not scenario:

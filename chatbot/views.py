@@ -783,49 +783,19 @@ class RandomEndpointAPIView(APIView):
         endpoint_type = request.session.get('endpoint_type', 'general_hight_highf')
         print(f"DEBUG: POST request - retrieved endpoint_type from session: {endpoint_type}")
         
-        # Check if scenario exists in session
+        # Get scenario from session - if it doesn't exist, that's a problem
         scenario = request.session.get('scenario')
         if scenario:
-            print(f"DEBUG: POST request - scenario found in session: {scenario}")
+            print(f"DEBUG: POST request - using existing scenario: {scenario}")
         else:
-            print(f"DEBUG: POST request - no scenario in session, endpoint_type is: {endpoint_type}")
-            
-            # Always randomly select endpoint_type on first request (when no scenario exists)
-            endpoint_type = random.choice(['general_hight_highf', 'general_hight_lowf', 'general_lowt_highf', 'general_lowt_lowf', 'lulu_hight_highf', 'lulu_hight_lowf', 'lulu_lowt_highf', 'lulu_lowt_lowf'])
-            request.session['endpoint_type'] = endpoint_type
-            print(f"DEBUG: POST request - randomly selected endpoint_type: {endpoint_type}")
-            
-            # Set up scenario based on endpoint_type
+            print(f"ERROR: No scenario found in session! This should not happen.")
+            # Fallback scenario - this should rarely be needed
             scenario = {
-                'problem_type': "not yet assigned"
+                'brand': 'Basic',
+                'problem_type': 'A',
+                'think_level': 'High',
+                'feel_level': 'High'
             }
-            
-            # Set brand based on endpoint_type
-            if "lulu" in endpoint_type:
-                scenario['brand'] = 'Lulu'
-            else:
-                scenario['brand'] = 'Basic'
-            
-            # Set feel level based on endpoint_type
-            if "lowf" in endpoint_type:
-                scenario['feel_level'] = 'Low'
-            elif "highf" in endpoint_type:
-                scenario['feel_level'] = 'High'
-            else:
-                scenario['feel_level'] = 'High'  # default
-            
-            # Set think level based on endpoint_type
-            if "lowt" in endpoint_type:
-                scenario['think_level'] = 'Low'
-            elif "hight" in endpoint_type:
-                scenario['think_level'] = 'High'
-            else:
-                scenario['think_level'] = 'High'  # default
-            
-            # Store scenario in session and force save
-            request.session['scenario'] = scenario
-            request.session.modified = True  # Force session save
-            print(f"DEBUG: POST request - created scenario: {scenario}")
         
         if 'lulu' in endpoint_type:
             # Use the Lulu API view

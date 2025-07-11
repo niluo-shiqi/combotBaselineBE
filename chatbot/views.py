@@ -43,6 +43,9 @@ class ChatAPIView(APIView):
             scenario = data.get('scenario')
             if scenario:
                 print(f"DEBUG: Retrieved scenario from request data: {scenario}")
+                # Store it in session for future requests
+                request.session['scenario'] = scenario
+                request.session.save()
             else:
                 print(f"DEBUG: No scenario in session or request data, using fallback")
                 scenario = {
@@ -98,7 +101,10 @@ class ChatAPIView(APIView):
             message_type = " "
 
         conversation_index += 1
-        return Response({"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}, status=status.HTTP_200_OK)
+        response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
+        # Add scenario to response for frontend to send back
+        response_data['scenario'] = scenario
+        return Response(response_data, status=status.HTTP_200_OK)
 
     def question_initial_response(self, class_type, user_input, scenario):
         if scenario['brand'] == "Lulu":
@@ -433,6 +439,11 @@ class LuluAPIView(APIView):
         class_type = data.get('classType', '')
         message_type_log = data.get('messageTypeLog', '')
 
+        # Debug session information
+        print(f"DEBUG: Lulu POST request - Session ID: {request.session.session_key}")
+        print(f"DEBUG: Lulu POST request - Session keys: {list(request.session.keys())}")
+        print(f"DEBUG: Lulu POST request - Session modified: {request.session.modified}")
+
         # Get scenario from session - ensure it's always available
         scenario = request.session.get('scenario')
         if not scenario:
@@ -440,6 +451,9 @@ class LuluAPIView(APIView):
             scenario = data.get('scenario')
             if scenario:
                 print(f"DEBUG: Retrieved scenario from request data (Lulu): {scenario}")
+                # Store it in session for future requests
+                request.session['scenario'] = scenario
+                request.session.save()
             else:
                 print(f"DEBUG: No scenario in session or request data (Lulu), using fallback")
                 scenario = {
@@ -722,10 +736,18 @@ class RandomEndpointAPIView(APIView):
             # Route to appropriate initial view
             if scenario['brand'] == 'Lulu':
                 lulu_initial_view = LuluInitialMessageAPIView()
-                return lulu_initial_view.get(request, *args, **kwargs)
+                response = lulu_initial_view.get(request, *args, **kwargs)
+                # Add scenario to response for frontend to send back
+                if hasattr(response, 'data'):
+                    response.data['scenario'] = scenario
+                return response
             else:
                 initial_view = InitialMessageAPIView()
-                return initial_view.get(request, *args, **kwargs)
+                response = initial_view.get(request, *args, **kwargs)
+                # Add scenario to response for frontend to send back
+                if hasattr(response, 'data'):
+                    response.data['scenario'] = scenario
+                return response
         
         elif path.endswith('/closing/'):
             # Handle closing message request

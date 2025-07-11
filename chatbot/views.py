@@ -363,6 +363,9 @@ class InitialMessageAPIView(APIView):
             }
         }
 
+        print(f"DEBUG: InitialMessageAPIView - Returning message: {initial_message['message'][:50]}...")
+        print(f"DEBUG: InitialMessageAPIView - Response data: {response_data}")
+
         return Response(response_data)
 
 
@@ -415,6 +418,10 @@ class LuluInitialMessageAPIView(APIView):
                 "feel_level": scenario['feel_level']
             }
         }
+        
+        print(f"DEBUG: LuluInitialMessageAPIView - Returning message: {initial_message['message'][:50]}...")
+        print(f"DEBUG: LuluInitialMessageAPIView - Response data: {response_data}")
+        
         return Response(response_data)
 
 
@@ -735,6 +742,7 @@ class RandomEndpointAPIView(APIView):
             
             # Route to appropriate initial view
             if scenario['brand'] == 'Lulu':
+                print(f"DEBUG: Routing to LuluInitialMessageAPIView with scenario: {scenario}")
                 lulu_initial_view = LuluInitialMessageAPIView()
                 response = lulu_initial_view.get(request, *args, **kwargs)
                 # Add scenario to response for frontend to send back
@@ -742,6 +750,7 @@ class RandomEndpointAPIView(APIView):
                     response.data['scenario'] = scenario
                 return response
             else:
+                print(f"DEBUG: Routing to InitialMessageAPIView with scenario: {scenario}")
                 initial_view = InitialMessageAPIView()
                 response = initial_view.get(request, *args, **kwargs)
                 # Add scenario to response for frontend to send back

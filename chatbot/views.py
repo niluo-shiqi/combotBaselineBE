@@ -712,8 +712,12 @@ class RandomEndpointAPIView(APIView):
             
             # Store scenario in session
             request.session['scenario'] = scenario
+            request.session.save()  # Explicitly save the session
             print(f"DEBUG: Set scenario for {choice}: {scenario}")
             print(f"DEBUG: Session scenario after setting: {request.session.get('scenario')}")
+            print(f"DEBUG: GET request - Session ID: {request.session.session_key}")
+            print(f"DEBUG: GET request - Session keys: {list(request.session.keys())}")
+            print(f"DEBUG: GET request - Session modified: {request.session.modified}")
             
             # Route to appropriate initial view
             if scenario['brand'] == 'Lulu':
@@ -771,6 +775,7 @@ class RandomEndpointAPIView(APIView):
             
             # Store scenario in session
             request.session['scenario'] = scenario
+            request.session.save()  # Explicitly save the session
             print(f"DEBUG: Set scenario for main endpoint {endpoint_type}: {scenario}")
             
             return Response({
@@ -781,12 +786,18 @@ class RandomEndpointAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
         
+        # Debug session information
+        print(f"DEBUG: POST request - Session ID: {request.session.session_key}")
+        print(f"DEBUG: POST request - Session keys: {list(request.session.keys())}")
+        print(f"DEBUG: POST request - Session modified: {request.session.modified}")
+        
         # Get scenario from session - if it doesn't exist, that's a problem
         scenario = request.session.get('scenario')
         if scenario:
             print(f"DEBUG: POST request - using existing scenario: {scenario}")
         else:
             print(f"ERROR: No scenario found in session! This should not happen.")
+            print(f"DEBUG: Available session data: {dict(request.session)}")
             # Fallback scenario - this should rarely be needed
             scenario = {
                 'brand': 'Basic',

@@ -290,6 +290,10 @@ class ChatAPIView(APIView):
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
         print(f"DEBUG: Saving conversation with scenario: {scenario}")
+        print(f"DEBUG: Save conversation - email: {email}, time_spent: {time_spent}")
+        print(f"DEBUG: Save conversation - chat_log length: {len(chat_log) if chat_log else 0}")
+        print(f"DEBUG: Save conversation - message_type_log length: {len(message_type_log) if message_type_log else 0}")
+        
         conversation = Conversation(
             email=email,
             time_spent=time_spent,
@@ -301,7 +305,9 @@ class ChatAPIView(APIView):
             feel_level=scenario['feel_level'],
             
         )
+        print(f"DEBUG: About to save conversation to database...")
         conversation.save()
+        print(f"DEBUG: Conversation saved to database with ID: {conversation.id}")
 
         # Create safe HTML link with proper escaping
         survey_url = "https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE"
@@ -658,6 +664,11 @@ class LuluAPIView(APIView):
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
+        print(f"DEBUG: Lulu save_conversation called with scenario: {scenario}")
+        print(f"DEBUG: Lulu save conversation - email: {email}, time_spent: {time_spent}")
+        print(f"DEBUG: Lulu save conversation - chat_log length: {len(chat_log) if chat_log else 0}")
+        print(f"DEBUG: Lulu save conversation - message_type_log length: {len(message_type_log) if message_type_log else 0}")
+        
         conversation = Conversation(
             email=email,
             time_spent=time_spent,
@@ -669,7 +680,9 @@ class LuluAPIView(APIView):
             feel_level=scenario['feel_level'],
             
         )
+        print(f"DEBUG: About to save Lulu conversation to database...")
         conversation.save()
+        print(f"DEBUG: Lulu conversation saved to database with ID: {conversation.id}")
 
         # Create safe HTML link with proper escaping
         survey_url = "https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE"

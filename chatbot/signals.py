@@ -13,14 +13,22 @@ def export_to_google_sheets(sender, instance, created, **kwargs):
     """
     Automatically export new conversations to Google Sheets
     """
+    print(f"DEBUG: Signal triggered - Conversation {instance.id} created: {created}")
+    
     if not created:  # Only export new conversations, not updates
+        print(f"DEBUG: Skipping export - conversation was updated, not created")
         return
     
     # Check if Google Sheets integration is configured
     spreadsheet_id = getattr(settings, 'GOOGLE_SHEETS_SPREADSHEET_ID', None)
     credentials_file = getattr(settings, 'GOOGLE_SHEETS_CREDENTIALS_FILE', 'credentials.json')
     
+    print(f"DEBUG: Google Sheets config - spreadsheet_id: {spreadsheet_id}")
+    print(f"DEBUG: Google Sheets config - credentials_file: {credentials_file}")
+    print(f"DEBUG: Google Sheets config - credentials_file exists: {os.path.exists(credentials_file) if credentials_file else False}")
+    
     if not spreadsheet_id or not os.path.exists(credentials_file):
+        print(f"DEBUG: Skipping export - Google Sheets not configured properly")
         return  # Skip if not configured
     
     try:
@@ -66,4 +74,5 @@ def export_to_google_sheets(sender, instance, created, **kwargs):
         
     except Exception as error:
         print(f"Error exporting to Google Sheets: {error}")
+        print(f"DEBUG: Full error details: {type(error).__name__}: {str(error)}")
         # Don't raise the exception to avoid breaking the conversation save 

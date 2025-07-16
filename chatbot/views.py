@@ -61,10 +61,19 @@ class ChatAPIView(APIView):
             if conversation_index == 0:
                 os.environ["TRANSFORMERS_CACHE"] = "./cache"  # Optional, for local storage
                 os.environ["USE_TF"] = "0"  # Disable TensorFlow
-                classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
-                class_response = classifier(user_input)[0]
-                class_type = class_response["label"]
-                confidence = class_response["score"]
+                
+                # Check if the user is asking about returns specifically
+                return_keywords = ['return', 'refund', 'send back', 'bring back', 'take back']
+                is_return_request = any(keyword in user_input.lower() for keyword in return_keywords)
+                
+                if is_return_request:
+                    # Route return requests to "Other" classification for OpenAI handling
+                    class_type = "Other"
+                else:
+                    classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                    class_response = classifier(user_input)[0]
+                    class_type = class_response["label"]
+                    confidence = class_response["score"]
                 
                 # Update the scenario with the actual problem type from classifier
                 scenario['problem_type'] = class_type
@@ -79,12 +88,11 @@ class ChatAPIView(APIView):
                     chat_response = chat_response[len("Paraphrased: "):]
                 message_type += class_type
             elif conversation_index in (1, 2, 3, 4):
-                second_message_text = message_type_log[1]['text']
-
-                if "Low" in second_message_text:
+                # Use scenario's think_level to determine response type
+                if scenario['think_level'] == "Low":
                     chat_response = self.low_question_continuation_response(chat_log)
                     message_type = " "
-                else:
+                else:  # High think level
                     chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
                     message_type = " "
 
@@ -480,10 +488,18 @@ class LuluAPIView(APIView):
 
         if conversation_index in (0, 1, 2, 3, 4):
             if conversation_index == 0:
-                classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
-                class_response = classifier(user_input)[0]
-                class_type = class_response["label"]
-                confidence = class_response["score"]
+                # Check if the user is asking about returns specifically
+                return_keywords = ['return', 'refund', 'send back', 'bring back', 'take back']
+                is_return_request = any(keyword in user_input.lower() for keyword in return_keywords)
+                
+                if is_return_request:
+                    # Route return requests to "Other" classification for OpenAI handling
+                    class_type = "Other"
+                else:
+                    classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                    class_response = classifier(user_input)[0]
+                    class_type = class_response["label"]
+                    confidence = class_response["score"]
                 
                 # Update the scenario with the actual problem type from classifier
                 scenario['problem_type'] = class_type
@@ -498,16 +514,12 @@ class LuluAPIView(APIView):
                     chat_response = chat_response[len("Paraphrased: "):]
                 message_type += class_type
             elif conversation_index in (1, 2, 3, 4):
-
-                second_message_text = message_type_log[1]['text']
-
-                if "Low" in second_message_text:
+                # Use scenario's think_level to determine response type
+                if scenario['think_level'] == "Low":
                     chat_response = self.low_question_continuation_response(chat_log)
-
                     message_type = " "
-                else:
+                else:  # High think level
                     chat_response = self.high_question_continuation_response(class_type, chat_log)
-
                     message_type = " "
 
         elif conversation_index == 5:
@@ -609,7 +621,8 @@ class LuluAPIView(APIView):
             chat_response = self.select_next_response(chat_log, B_responses_high.copy())
         elif class_type == "C":
             chat_response = self.select_next_response(chat_log, C_responses_high.copy())
-
+        elif class_type == "Other":
+            chat_response = self.paraphrase_response(user_input)
         return chat_response
 
     def low_question_continuation_response(self, chat_log):
@@ -657,8 +670,7 @@ class LuluAPIView(APIView):
     def paraphrase_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase what the user is saying, ask if its correct," +
-                                                       "then ask to elaborate or how they wish to resolve this issue." + user_input}]
+            messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Be helpful and chipper. Try to resolve the issue the user is having by asking follow up questions and providing relevant information. " + user_input}]
         )
         return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "123!"
 

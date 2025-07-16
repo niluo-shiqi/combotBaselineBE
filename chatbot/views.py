@@ -526,7 +526,7 @@ class LuluAPIView(APIView):
                     chat_response = self.low_question_continuation_response(chat_log)
                     message_type = " "
                 else:  # High think level
-                    chat_response = self.high_question_continuation_response(class_type, chat_log)
+                    chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
                     message_type = " "
 
         elif conversation_index == 5:
@@ -597,7 +597,7 @@ class LuluAPIView(APIView):
 
         return chat_response
 
-    def high_question_continuation_response(self, class_type, chat_log):
+    def high_question_continuation_response(self, class_type, chat_log, scenario):
 
         A_responses_high = [
             "Could you outline the problem with more precision?",

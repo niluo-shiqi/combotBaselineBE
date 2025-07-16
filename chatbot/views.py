@@ -244,7 +244,7 @@ class ChatAPIView(APIView):
             try:
                 completion = openai.ChatCompletion.create(
                     model="gpt-4-turbo-preview",
-                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot. Based on the chat log below, provide a helpful and relevant response to continue the conversation. Ask follow-up questions to gather more information and help resolve the customer's issue. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
+                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional and helpful. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
                 )
                 chat_response = completion["choices"][0]["message"]["content"].strip('"')
             except Exception as e:
@@ -634,7 +634,7 @@ class LuluAPIView(APIView):
             try:
                 completion = openai.ChatCompletion.create(
                     model="gpt-4-turbo-preview",
-                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a helpful and relevant response to continue the conversation. Ask follow-up questions to gather more information and help resolve the customer's issue. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
+                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional and helpful. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
                 )
                 chat_response = completion["choices"][0]["message"]["content"].strip('"')
             except Exception as e:

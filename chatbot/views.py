@@ -79,8 +79,6 @@ class ChatAPIView(APIView):
                 scenario['problem_type'] = class_type
                 request.session['scenario'] = scenario
                 
-                if class_type == "Other":
-                    conversation_index += 10
                 chat_response = self.question_initial_response(class_type, user_input, scenario)
                 message_type = scenario['think_level']
                 if chat_response.startswith("Paraphrased: "):
@@ -240,7 +238,18 @@ class ChatAPIView(APIView):
             chat_response = self.select_next_response(chat_log, B_responses_high.copy())
         elif class_type == "C":
             chat_response = self.select_next_response(chat_log, C_responses_high.copy())
-
+        elif class_type == "Other":
+            # Use OpenAI to generate contextual response for "Other" classification
+            chat_logs_string = json.dumps(chat_log, indent=2)
+            try:
+                completion = openai.ChatCompletion.create(
+                    model="gpt-4-turbo-preview",
+                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot. Based on the chat log below, provide a helpful and relevant response to continue the conversation. Ask follow-up questions to gather more information and help resolve the customer's issue. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
+                )
+                chat_response = completion["choices"][0]["message"]["content"].strip('"')
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                chat_response = "I understand. Could you tell me more about your situation so I can help you better?"
         return chat_response
 
     def low_question_continuation_response(self, chat_log):
@@ -284,7 +293,7 @@ class ChatAPIView(APIView):
             model="gpt-4-turbo-preview",
             messages=[{"role": "assistant", "content": "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: " + user_input}],
         )
-        return completion["choices"][0]["message"]["content"] + "woof"
+        return completion["choices"][0]["message"]["content"]
 
     def paraphrase_response(self, user_input):
         print("Wow is the user_input: ", user_input)
@@ -505,8 +514,6 @@ class LuluAPIView(APIView):
                 scenario['problem_type'] = class_type
                 request.session['scenario'] = scenario
                 
-                if class_type == "Other":
-                    conversation_index += 10
                 chat_response = self.question_initial_response(class_type, user_input)
                 message_type = scenario['think_level']
                 if chat_response.startswith("Paraphrased: "):
@@ -586,7 +593,7 @@ class LuluAPIView(APIView):
                 model="gpt-4-turbo-preview",
                 messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint back to them, ask them if its correct, then ask them to provide more information. Here's the complaint: " + user_input}],
             )
-            chat_response = completion["choices"][0]["message"]["content"] + "bark"
+            chat_response = completion["choices"][0]["message"]["content"]
 
         return chat_response
 
@@ -622,7 +629,17 @@ class LuluAPIView(APIView):
         elif class_type == "C":
             chat_response = self.select_next_response(chat_log, C_responses_high.copy())
         elif class_type == "Other":
-            chat_response = self.paraphrase_response(user_input)
+            # Use OpenAI to generate contextual response for "Other" classification
+            chat_logs_string = json.dumps(chat_log, indent=2)
+            try:
+                completion = openai.ChatCompletion.create(
+                    model="gpt-4-turbo-preview",
+                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a helpful and relevant response to continue the conversation. Ask follow-up questions to gather more information and help resolve the customer's issue. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
+                )
+                chat_response = completion["choices"][0]["message"]["content"].strip('"')
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                chat_response = "I understand. Could you tell me more about your situation so I can help you better?"
         return chat_response
 
     def low_question_continuation_response(self, chat_log):
@@ -665,14 +682,14 @@ class LuluAPIView(APIView):
             model="gpt-4-turbo-preview",
             messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint, ask if its correct, then ask them to provide more information. Here's the complaint: " + user_input}]
         )
-        return completion["choices"][0]["message"]["content"] + "hiss"
+        return completion["choices"][0]["message"]["content"]
 
     def paraphrase_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
             messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Be helpful and chipper. Try to resolve the issue the user is having by asking follow up questions and providing relevant information. " + user_input}]
         )
-        return "Paraphrased: " + completion["choices"][0]["message"]["content"] + "123!"
+        return "Paraphrased: " + completion["choices"][0]["message"]["content"]
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information

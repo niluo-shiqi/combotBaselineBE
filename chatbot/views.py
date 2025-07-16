@@ -182,7 +182,7 @@ class ChatAPIView(APIView):
                 model="gpt-4-turbo-preview",
                 messages=[{"role": "assistant", "content": "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: " + user_input}],
             )
-            chat_response = completion["choices"][0]["message"]["content"] + "meow"
+            chat_response = completion["choices"][0]["message"]["content"]
 
         return chat_response
 
@@ -633,7 +633,7 @@ class LuluAPIView(APIView):
                 messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
                                                            chat_logs_string}]
             )
-            clean_content = completion["choices"][0]["message"]["content"].strip('"') + "meow123"
+            clean_content = completion["choices"][0]["message"]["content"].strip('"')
             return clean_content
         except Exception as e:
             print(f"An error occurred: {e}")

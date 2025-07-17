@@ -180,7 +180,7 @@ class ChatAPIView(APIView):
                 model="gpt-4-turbo-preview",
                 messages=[{"role": "assistant", "content": "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: " + user_input}],
             )
-            chat_response = completion["choices"][0]["message"]["content"]
+            chat_response = completion["choices"][0]["message"]["content"].strip('"')
 
         return chat_response
 
@@ -293,7 +293,7 @@ class ChatAPIView(APIView):
             model="gpt-4-turbo-preview",
             messages=[{"role": "assistant", "content": "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: " + user_input}],
         )
-        return completion["choices"][0]["message"]["content"]
+        return completion["choices"][0]["message"]["content"].strip('"')
 
     def paraphrase_response(self, user_input):
         print("Wow is the user_input: ", user_input)
@@ -593,7 +593,7 @@ class LuluAPIView(APIView):
                 model="gpt-4-turbo-preview",
                 messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint back to them, ask them if its correct, then ask them to provide more information. Here's the complaint: " + user_input}],
             )
-            chat_response = completion["choices"][0]["message"]["content"]
+            chat_response = completion["choices"][0]["message"]["content"].strip('"')
 
         return chat_response
 
@@ -682,7 +682,7 @@ class LuluAPIView(APIView):
             model="gpt-4-turbo-preview",
             messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint, ask if its correct, then ask them to provide more information. Here's the complaint: " + user_input}]
         )
-        return completion["choices"][0]["message"]["content"]
+        return completion["choices"][0]["message"]["content"].strip('"')
 
     def paraphrase_response(self, user_input):
         completion = openai.ChatCompletion.create(

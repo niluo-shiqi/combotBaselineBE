@@ -284,10 +284,10 @@ class ChatAPIView(APIView):
 
     def understanding_statement_response(self, scenario):
         feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect."
-        feel_response_low = "I see. Let me check what we can do about this."
+        feel_response_low = ""
 
         # Use the feel_level from the scenario
-        feel_response = feel_response_high if scenario['feel_level'] == "High" else feel_response_low
+        feel_response = feel_response_high if scenario['feel_level'] == "High" else ""
         message_type = scenario['feel_level']
 
         return feel_response, message_type

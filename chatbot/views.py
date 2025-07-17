@@ -76,7 +76,7 @@ class ChatAPIView(APIView):
                     confidence = class_response["score"]
 
                     # If the model predicts not-Other with very low confidence, treat as Other
-                    if class_type != "Other" and confidence < 0.3:
+                    if class_type != "Other" and confidence < 0.6:
                         class_type = "Other"
                     print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
                 
@@ -526,7 +526,7 @@ class LuluAPIView(APIView):
                     confidence = class_response["score"]
 
                     # If the model predicts not-Other with very low confidence, treat as Other
-                    if class_type != "Other" and confidence < 0.3:
+                    if class_type != "Other" and confidence < 6:
                         class_type = "Other"
                     print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
                 # Update the scenario with the actual problem type from classifier
@@ -697,8 +697,8 @@ class LuluAPIView(APIView):
             return random.choice(updated_response_options)
 
     def understanding_statement_response(self, scenario):
-        feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect."
-        feel_response_low = "I see. Let me check what we can do about this."
+        feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect. Hold on while I check with my manager..."
+        feel_response_low = ""
 
         # Use the feel_level from the scenario
         feel_response = feel_response_high if scenario['feel_level'] == "High" else feel_response_low
@@ -888,24 +888,17 @@ class RandomEndpointAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
         
-        # Debug session information
-        print(f"DEBUG: POST request - Session ID: {request.session.session_key}")
-        print(f"DEBUG: POST request - Session keys: {list(request.session.keys())}")
-        print(f"DEBUG: POST request - Session modified: {request.session.modified}")
-        
         # Get scenario from session - if it doesn't exist, that's a problem
         scenario = request.session.get('scenario')
         if scenario:
             print(f"DEBUG: POST request - using existing scenario: {scenario}")
         else:
-            print(f"ERROR: No scenario found in session! This should not happen.")
-            print(f"DEBUG: Available session data: {dict(request.session)}")
             # Fallback scenario - this should rarely be needed
             scenario = {
-                'brand': 'Basic',
-                'problem_type': 'A',
-                'think_level': 'High',
-                'feel_level': 'High'
+                'brand': 'error',
+                'problem_type': 'error',
+                'think_level': 'error',
+                'feel_level': 'error'
             }
         
         # Use scenario brand to determine which view to use

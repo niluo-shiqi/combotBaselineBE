@@ -74,6 +74,11 @@ class ChatAPIView(APIView):
                     class_response = classifier(user_input)[0]
                     class_type = class_response["label"]
                     confidence = class_response["score"]
+
+                    # If the model predicts not-Other with low confidence, treat as Other
+                    if class_type != "Other" and confidence < 0.5:
+                        class_type = "Other"
+                    print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
                 
                 # Update the scenario with the actual problem type from classifier
                 scenario['problem_type'] = class_type
@@ -509,6 +514,10 @@ class LuluAPIView(APIView):
                     class_response = classifier(user_input)[0]
                     class_type = class_response["label"]
                     confidence = class_response["score"]
+
+                    # If the model predicts not-Other with low confidence, treat as Other
+                    if class_type != "Other" and confidence < 0.5:
+                        class_type = "Other"
                 
                 # Update the scenario with the actual problem type from classifier
                 scenario['problem_type'] = class_type

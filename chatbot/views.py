@@ -325,6 +325,9 @@ class ChatAPIView(APIView):
         print(f"DEBUG: Save conversation - email: {email}, time_spent: {time_spent}")
         print(f"DEBUG: Save conversation - chat_log length: {len(chat_log) if chat_log else 0}")
         print(f"DEBUG: Save conversation - message_type_log length: {len(message_type_log) if message_type_log else 0}")
+        print(f"DEBUG: Save conversation - problem_type from scenario: {scenario.get('problem_type', 'NOT_FOUND')}")
+        print(f"DEBUG: Save conversation - think_level from scenario: {scenario.get('think_level', 'NOT_FOUND')}")
+        print(f"DEBUG: Save conversation - feel_level from scenario: {scenario.get('feel_level', 'NOT_FOUND')}")
         
         conversation = Conversation(
             email=email,
@@ -726,6 +729,9 @@ class LuluAPIView(APIView):
         print(f"DEBUG: Lulu save conversation - email: {email}, time_spent: {time_spent}")
         print(f"DEBUG: Lulu save conversation - chat_log length: {len(chat_log) if chat_log else 0}")
         print(f"DEBUG: Lulu save conversation - message_type_log length: {len(message_type_log) if message_type_log else 0}")
+        print(f"DEBUG: Lulu save conversation - problem_type from scenario: {scenario.get('problem_type', 'NOT_FOUND')}")
+        print(f"DEBUG: Lulu save conversation - think_level from scenario: {scenario.get('think_level', 'NOT_FOUND')}")
+        print(f"DEBUG: Lulu save conversation - feel_level from scenario: {scenario.get('feel_level', 'NOT_FOUND')}")
         
         conversation = Conversation(
             email=email,

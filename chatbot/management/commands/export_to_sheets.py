@@ -52,14 +52,13 @@ class Command(BaseCommand):
             data = []
             headers = [
                 'ID', 'Email', 'Time Spent (seconds)', 'Test Type', 'Problem Type', 
-                'Think Level', 'Feel Level', 'Endpoint Type', 'Created At', 'Chat Log', 'Message Type Log'
+                'Think Level', 'Feel Level', 'Created At', 'Chat Log'
             ]
             data.append(headers)
             
             for conv in conversations:
-                # Format chat log and message type log as JSON strings
+                # Format chat log as JSON string
                 chat_log_str = json.dumps(conv.chat_log, indent=2) if conv.chat_log else ''
-                message_type_log_str = json.dumps(conv.message_type_log, indent=2) if conv.message_type_log else ''
                 
                 row = [
                     conv.id,
@@ -69,10 +68,8 @@ class Command(BaseCommand):
                     conv.problem_type,
                     conv.think_level,
                     conv.feel_level,
-                    getattr(conv, 'endpoint_type', 'N/A'),
                     conv.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    chat_log_str,
-                    message_type_log_str
+                    chat_log_str
                 ]
                 data.append(row)
             

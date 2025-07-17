@@ -91,6 +91,8 @@ class ChatAPIView(APIView):
                     chat_response = chat_response[len("Paraphrased: "):]
                 message_type += class_type
             elif conversation_index in (1, 2, 3, 4):
+                # Get class_type from the updated scenario, not from request data
+                class_type = scenario.get('problem_type', 'Other')
                 # Use scenario's think_level to determine response type
                 if scenario['think_level'] == "Low":
                     chat_response = self.low_question_continuation_response(chat_log)
@@ -543,6 +545,8 @@ class LuluAPIView(APIView):
                     chat_response = chat_response[len("Paraphrased: "):]
                 message_type += class_type
             elif conversation_index in (1, 2, 3, 4):
+                # Get class_type from the updated scenario, not from request data
+                class_type = scenario.get('problem_type', 'Other')
                 # Use scenario's think_level to determine response type
                 if scenario['think_level'] == "Low":
                     chat_response = self.low_question_continuation_response(chat_log)

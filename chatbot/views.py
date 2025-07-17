@@ -76,7 +76,7 @@ class ChatAPIView(APIView):
                     confidence = class_response["score"]
 
                     # If the model predicts not-Other with low confidence, treat as Other
-                    if class_type != "Other" and confidence < 0.5:
+                    if class_type != "Other" and confidence < 0.6:
                         class_type = "Other"
                     print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
                 
@@ -755,7 +755,7 @@ class RandomEndpointAPIView(APIView):
             
             # Initialize scenario with default values
             scenario = {
-                'problem_type': "not yet assigned"
+                'problem_type': "Other"
             }
             
             # Set brand based on choice

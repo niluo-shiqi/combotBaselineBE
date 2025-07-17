@@ -333,12 +333,17 @@ class ChatAPIView(APIView):
         
         # Extract problem_type from message_type_log if possible
         if message_type_log and len(message_type_log) > 0:
-            last_message_type = message_type_log[-1]
-            # Problem type is usually the last character (A/B/C/Other)
-            if last_message_type[-1] in ['A', 'B', 'C']:
-                problem_type = last_message_type[-1]
+            # Find the last non-empty message type that contains a problem type (A/B/C)
+            for i in range(len(message_type_log) - 1, -1, -1):
+                message_obj = message_type_log[i]
+                if isinstance(message_obj, dict) and 'text' in message_obj:
+                    text = message_obj['text']
+                    if text and len(text) > 0 and text[-1] in ['A', 'B', 'C']:
+                        problem_type = text[-1]
+                        break
             else:
-                problem_type = 'Other'
+                # If no valid problem type found, use scenario default
+                problem_type = scenario.get('problem_type', 'Other')
         else:
             problem_type = scenario.get('problem_type', 'Other')
         print(f"DEBUG: Save conversation - problem_type from message_type_log: {problem_type}")
@@ -750,12 +755,17 @@ class LuluAPIView(APIView):
         
         # Extract problem_type from message_type_log if possible
         if message_type_log and len(message_type_log) > 0:
-            last_message_type = message_type_log[-1]
-            # Problem type is usually the last character (A/B/C/Other)
-            if last_message_type[-1] in ['A', 'B', 'C']:
-                problem_type = last_message_type[-1]
+            # Find the last non-empty message type that contains a problem type (A/B/C)
+            for i in range(len(message_type_log) - 1, -1, -1):
+                message_obj = message_type_log[i]
+                if isinstance(message_obj, dict) and 'text' in message_obj:
+                    text = message_obj['text']
+                    if text and len(text) > 0 and text[-1] in ['A', 'B', 'C']:
+                        problem_type = text[-1]
+                        break
             else:
-                problem_type = 'Other'
+                # If no valid problem type found, use scenario default
+                problem_type = scenario.get('problem_type', 'Other')
         else:
             problem_type = scenario.get('problem_type', 'Other')
         print(f"DEBUG: Lulu save conversation - problem_type from message_type_log: {problem_type}")

@@ -331,13 +331,24 @@ class ChatAPIView(APIView):
         print(f"DEBUG: Save conversation - think_level from scenario: {scenario.get('think_level', 'NOT_FOUND')}")
         print(f"DEBUG: Save conversation - feel_level from scenario: {scenario.get('feel_level', 'NOT_FOUND')}")
         
+        # Extract problem_type from message_type_log if possible
+        if message_type_log and len(message_type_log) > 0:
+            last_message_type = message_type_log[-1]
+            # Problem type is usually the last character (A/B/C/Other)
+            if last_message_type[-1] in ['A', 'B', 'C']:
+                problem_type = last_message_type[-1]
+            else:
+                problem_type = 'Other'
+        else:
+            problem_type = scenario.get('problem_type', 'Other')
+        print(f"DEBUG: Save conversation - problem_type from message_type_log: {problem_type}")
         conversation = Conversation(
             email=email,
             time_spent=time_spent,
             chat_log=chat_log,
             message_type_log=message_type_log,
             test_type=scenario['brand'],
-            problem_type=scenario['problem_type'],
+            problem_type=problem_type,
             think_level=scenario['think_level'],
             feel_level=scenario['feel_level'],
             
@@ -737,13 +748,24 @@ class LuluAPIView(APIView):
         print(f"DEBUG: Lulu save conversation - think_level from scenario: {scenario.get('think_level', 'NOT_FOUND')}")
         print(f"DEBUG: Lulu save conversation - feel_level from scenario: {scenario.get('feel_level', 'NOT_FOUND')}")
         
+        # Extract problem_type from message_type_log if possible
+        if message_type_log and len(message_type_log) > 0:
+            last_message_type = message_type_log[-1]
+            # Problem type is usually the last character (A/B/C/Other)
+            if last_message_type[-1] in ['A', 'B', 'C']:
+                problem_type = last_message_type[-1]
+            else:
+                problem_type = 'Other'
+        else:
+            problem_type = scenario.get('problem_type', 'Other')
+        print(f"DEBUG: Lulu save conversation - problem_type from message_type_log: {problem_type}")
         conversation = Conversation(
             email=email,
             time_spent=time_spent,
             chat_log=chat_log,
             message_type_log=message_type_log,
             test_type=scenario['brand'],
-            problem_type=scenario['problem_type'],
+            problem_type=problem_type,
             think_level=scenario['think_level'],
             feel_level=scenario['feel_level'],
             

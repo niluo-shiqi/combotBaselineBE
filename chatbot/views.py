@@ -112,9 +112,19 @@ class ChatAPIView(APIView):
             message_type = " "
 
         conversation_index += 1
+        
+        # Ensure class_type is always from the scenario
+        if not class_type or class_type == "":
+            class_type = scenario.get('problem_type', 'Other')
+        
         response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
         # Add scenario to response for frontend to send back
         response_data['scenario'] = scenario
+        
+        # Debug logging for scenario data
+        print(f"DEBUG: Response - conversation_index: {conversation_index}, class_type: {class_type}")
+        print(f"DEBUG: Response - scenario: {scenario}")
+        
         return Response(response_data, status=status.HTTP_200_OK)
 
     def question_initial_response(self, class_type, user_input, scenario):
@@ -552,9 +562,19 @@ class LuluAPIView(APIView):
             message_type = " "
 
         conversation_index += 1
+        
+        # Ensure class_type is always from the scenario
+        if not class_type or class_type == "":
+            class_type = scenario.get('problem_type', 'Other')
+        
         response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
         # Add scenario to response for frontend to send back
         response_data['scenario'] = scenario
+        
+        # Debug logging for scenario data
+        print(f"DEBUG: Lulu Response - conversation_index: {conversation_index}, class_type: {class_type}")
+        print(f"DEBUG: Lulu Response - scenario: {scenario}")
+        
         return Response(response_data, status=status.HTTP_200_OK)
 
     def question_initial_response(self, class_type, user_input):

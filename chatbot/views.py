@@ -328,7 +328,7 @@ class ChatAPIView(APIView):
             messages=[{"role": "assistant", "content": "Pretend you're a customer service bot. Paraphrase what I am about to say in the next sentence" +
                                                        "then ask me to elaborate or how I wish to resolve this issue." + user_input}],
         )
-        return "Paraphrased: " + completion["choices"][0]["message"]["content"] 
+        return "Paraphrased: " + completion["choices"][0]["message"]["content"].strip('"') 
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
@@ -752,7 +752,7 @@ class LuluAPIView(APIView):
             model="gpt-4-turbo-preview",
             messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Be helpful and chipper. Try to resolve the issue the user is having by asking follow up questions and providing relevant information. " + user_input}]
         )
-        return "Paraphrased: " + completion["choices"][0]["message"]["content"]
+        return "Paraphrased: " + completion["choices"][0]["message"]["content"].strip('"')
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information

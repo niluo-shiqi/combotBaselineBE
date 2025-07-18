@@ -6,5 +6,4 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-# Combot data collection json file
-/Users/ninaluo/CombotBackend/combot-data-collection-8eee97e4e41f.json
+

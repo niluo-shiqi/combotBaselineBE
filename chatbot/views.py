@@ -325,10 +325,9 @@ class ChatAPIView(APIView):
         print("Wow is the user_input: ", user_input)
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "Pretend you're a customer service bot. Paraphrase what I am about to say in the next sentence" +
-                                                       "then ask me to elaborate or how I wish to resolve this issue." + user_input}],
+            messages=[{"role": "assistant", "content": "Pretend you're a customer service bot. Paraphrase what the customer says, then continue the conversation naturally. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: " + user_input}],
         )
-        return "Paraphrased: " + completion["choices"][0]["message"]["content"].strip('"') 
+        return "Paraphrased: " + completion["choices"][0]["message"]["content"].strip('"')
 
     def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information

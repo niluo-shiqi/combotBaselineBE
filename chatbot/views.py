@@ -334,7 +334,8 @@ class ChatAPIView(APIView):
         # Validate email format
         import re
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_pattern, email):
+        
+        while not re.match(email_pattern, email):
             return "Please enter a valid email address in the format: example@domain.com"
         
         # Use problem_type directly from scenario
@@ -385,7 +386,7 @@ class InitialMessageAPIView(APIView):
 
         if think_level == "High":
             initial_message = {
-                "message": "[Basic High]Hi there! I'm Combot, and it's great to meet you. I'm here to help with any product or " +
+                "message": "Hi there! I'm Combot, and it's great to meet you. I'm here to help with any product or " +
                             "service problems you may have encountered in the past few months. This could include issues like " +
                             "a defective product, a delayed package, or a rude employee. My goal is to provide you with the best " +
                             "guidance to resolve your issue. Please start by recounting your bad experiences with as many " +
@@ -395,7 +396,7 @@ class InitialMessageAPIView(APIView):
             }
         elif think_level == "Low":
             initial_message = {
-                "message": "[Basic Low]The purpose of Combot is to assist you with any product or service problems you have " +
+                "message": "The purpose of Combot is to assist you with any product or service problems you have " +
                             "experienced in the past few months. Examples of issues include defective products, delayed packages, or " +
                             "rude frontline employees. Combot is designed to provide optimal guideance to resolve your issue. " +
                             "Please provide a detailed account of your negative experiences, including when, how, and what occured. " +
@@ -448,13 +449,13 @@ class LuluInitialMessageAPIView(APIView):
         
         if think_level == "High":
             initial_message = {
-                "message": "[LULU High] Hi there! I'm Lululemon's Combot, and it's great to meet you. I'm here to help with any product or " +
+                "message": "Hi there! I'm Lululemon's Combot, and it's great to meet you. I'm here to help with any product or " +
                            "service problems you may have encountered in the past few months. My goal is to make sure you receive " +
                            "the best guidance from me. Let's work together to resolve your issue!"
             }
         elif think_level == "Low":
             initial_message = {
-                "message": "[LULU Low] The purpose of Lululemon's Combot is to assist with resolution of product/service problems. " +
+                "message": "The purpose of Lululemon's Combot is to assist with resolution of product/service problems. " +
                            "If you have experienced any issues in the past few months, Combot is designed to guide you through " +
                            "finding the optimal solution."
             }
@@ -748,7 +749,7 @@ class LuluAPIView(APIView):
         # Validate email format
         import re
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_pattern, email):
+        while not re.match(email_pattern, email):
             return "Please enter a valid email address in the format: example@domain.com"
         
         conversation = Conversation(

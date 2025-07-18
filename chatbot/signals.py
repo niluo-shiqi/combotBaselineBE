@@ -39,7 +39,6 @@ def export_to_google_sheets(sender, instance, created, **kwargs):
         
         # Prepare the new row data
         chat_log_str = json.dumps(instance.chat_log, indent=2) if instance.chat_log else ''
-        message_type_log_str = json.dumps(instance.message_type_log, indent=2) if instance.message_type_log else ''
         
         row_data = [
             instance.id,

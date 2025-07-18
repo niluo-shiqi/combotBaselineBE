@@ -39,6 +39,7 @@ def export_to_google_sheets(sender, instance, created, **kwargs):
         
         # Prepare the new row data
         chat_log_str = json.dumps(instance.chat_log, indent=2) if instance.chat_log else ''
+        message_type_log_str = json.dumps(instance.message_type_log, indent=2) if instance.message_type_log else ''
         
         row_data = [
             instance.id,
@@ -48,8 +49,10 @@ def export_to_google_sheets(sender, instance, created, **kwargs):
             instance.problem_type,
             instance.think_level,
             instance.feel_level,
+            getattr(instance, 'endpoint_type', 'N/A'),
             instance.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            chat_log_str
+            chat_log_str,
+            message_type_log_str
         ]
         
         # Append the new row to the sheet

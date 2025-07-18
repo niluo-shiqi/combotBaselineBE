@@ -106,7 +106,7 @@ class ChatAPIView(APIView):
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 7")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, scenario)
             message_type = " "
         else:
             # Conversation is complete, don't continue
@@ -581,7 +581,7 @@ class LuluAPIView(APIView):
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 6 (Lulu)")
             print(f"DEBUG: Saving conversation with scenario: {scenario}")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, scenario)
             message_type = " "
         else:
             # Conversation is complete, don't continue

@@ -14,3 +14,7 @@ venv/
 *.swp
 *.swo
 *~
+
+# Google Sheets credentials
+combot-data-collection-8eee97e4e41f.json
+credentials.json

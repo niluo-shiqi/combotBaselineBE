@@ -106,14 +106,23 @@ class ChatAPIView(APIView):
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 7")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
-            message_type = " "
+            save_result = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+            
+            # Check if save_conversation returned an error message (email validation failed)
+            if isinstance(save_result, str) and "Please enter a valid email address" in save_result:
+                chat_response = save_result
+                message_type = " "
+                # Don't increment conversation_index - stay at 6 to allow retry
+                conversation_index = 6
+            else:
+                chat_response = save_result
+                message_type = " "
+                conversation_index += 1
         else:
             # Conversation is complete, don't continue
             chat_response = " "
             message_type = " "
-
-        conversation_index += 1
+            conversation_index += 1
         
         # Ensure class_type is always from the scenario
         if not class_type or class_type == "":
@@ -335,7 +344,7 @@ class ChatAPIView(APIView):
         import re
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         
-        while not re.match(email_pattern, email):
+        if not re.match(email_pattern, email):
             return "Please enter a valid email address in the format: example@domain.com"
         
         # Use problem_type directly from scenario
@@ -570,14 +579,23 @@ class LuluAPIView(APIView):
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 6 (Lulu)")
             print(f"DEBUG: Saving conversation with scenario: {scenario}")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
-            message_type = " "
+            save_result = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+            
+            # Check if save_conversation returned an error message (email validation failed)
+            if isinstance(save_result, str) and "Please enter a valid email address" in save_result:
+                chat_response = save_result
+                message_type = " "
+                # Don't increment conversation_index - stay at 6 to allow retry
+                conversation_index = 6
+            else:
+                chat_response = save_result
+                message_type = " "
+                conversation_index += 1
         else:
             # Conversation is complete, don't continue
             chat_response = " "
             message_type = " "
-
-        conversation_index += 1
+            conversation_index += 1
         
         # Ensure class_type is always from the scenario
         if not class_type or class_type == "":
@@ -749,7 +767,8 @@ class LuluAPIView(APIView):
         # Validate email format
         import re
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        while not re.match(email_pattern, email):
+        
+        if not re.match(email_pattern, email):
             return "Please enter a valid email address in the format: example@domain.com"
         
         conversation = Conversation(

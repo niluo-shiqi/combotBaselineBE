@@ -106,7 +106,7 @@ class ChatAPIView(APIView):
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 7")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, scenario)
+            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
             # Conversation is complete, don't continue
@@ -321,11 +321,12 @@ class ChatAPIView(APIView):
         )
         return "Paraphrased: " + completion["choices"][0]["message"]["content"] 
 
-    def save_conversation(self, request, email, time_spent, chat_log, scenario):
+    def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
         print(f"DEBUG: Saving conversation with scenario: {scenario}")
         print(f"DEBUG: Save conversation - email: {email}, time_spent: {time_spent}")
         print(f"DEBUG: Save conversation - chat_log length: {len(chat_log) if chat_log else 0}")
+        print(f"DEBUG: Save conversation - message_type_log length: {len(message_type_log) if message_type_log else 0}")
         print(f"DEBUG: Save conversation - problem_type from scenario: {scenario.get('problem_type', 'NOT_FOUND')}")
         print(f"DEBUG: Save conversation - think_level from scenario: {scenario.get('think_level', 'NOT_FOUND')}")
         print(f"DEBUG: Save conversation - feel_level from scenario: {scenario.get('feel_level', 'NOT_FOUND')}")
@@ -336,31 +337,18 @@ class ChatAPIView(APIView):
         if not re.match(email_pattern, email):
             return "Please enter a valid email address in the format: example@domain.com"
         
-        # Extract problem_type from message_type_log if possible
-        if message_type_log and len(message_type_log) > 0:
-            # Find the last non-empty message type that contains a problem type (A/B/C)
-            for i in range(len(message_type_log) - 1, -1, -1):
-                message_obj = message_type_log[i]
-                if isinstance(message_obj, dict) and 'text' in message_obj:
-                    text = message_obj['text']
-                    if text and len(text) > 0 and text[-1] in ['A', 'B', 'C']:
-                        problem_type = text[-1]
-                        break
-            else:
-                # If no valid problem type found, use scenario default
-                problem_type = scenario.get('problem_type', 'Other')
-        else:
-            problem_type = scenario.get('problem_type', 'Other')
-        print(f"DEBUG: Save conversation - problem_type from message_type_log: {problem_type}")
+        # Use problem_type directly from scenario
+        problem_type = scenario.get('problem_type', 'Other')
+        print(f"DEBUG: Save conversation - problem_type from scenario: {problem_type}")
         conversation = Conversation(
             email=email,
             time_spent=time_spent,
             chat_log=chat_log,
+            message_type_log=message_type_log,
             test_type=scenario['brand'],
             problem_type=problem_type,
             think_level=scenario['think_level'],
             feel_level=scenario['feel_level'],
-            
         )
         print(f"DEBUG: About to save conversation to database...")
         conversation.save()
@@ -581,7 +569,7 @@ class LuluAPIView(APIView):
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 6 (Lulu)")
             print(f"DEBUG: Saving conversation with scenario: {scenario}")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, scenario)
+            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
         else:
             # Conversation is complete, don't continue
@@ -747,11 +735,12 @@ class LuluAPIView(APIView):
         )
         return "Paraphrased: " + completion["choices"][0]["message"]["content"]
 
-    def save_conversation(self, request, email, time_spent, chat_log, scenario):
+    def save_conversation(self, request, email, time_spent, chat_log, message_type_log, scenario):
         # Save the conversation with all scenario information
         print(f"DEBUG: Lulu save_conversation called with scenario: {scenario}")
         print(f"DEBUG: Lulu save conversation - email: {email}, time_spent: {time_spent}")
         print(f"DEBUG: Lulu save conversation - chat_log length: {len(chat_log) if chat_log else 0}")
+        print(f"DEBUG: Lulu save conversation - message_type_log length: {len(message_type_log) if message_type_log else 0}")
         print(f"DEBUG: Lulu save conversation - problem_type from scenario: {scenario.get('problem_type', 'NOT_FOUND')}")
         print(f"DEBUG: Lulu save conversation - think_level from scenario: {scenario.get('think_level', 'NOT_FOUND')}")
         print(f"DEBUG: Lulu save conversation - feel_level from scenario: {scenario.get('feel_level', 'NOT_FOUND')}")
@@ -766,6 +755,7 @@ class LuluAPIView(APIView):
             email=email,
             time_spent=time_spent,
             chat_log=chat_log,
+            message_type_log=message_type_log,
             test_type=scenario['brand'],
             problem_type=scenario['problem_type'],
             think_level=scenario['think_level'],

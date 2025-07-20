@@ -1,0 +1,25 @@
+[Unit]
+Description=Combot Backend Django Application
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/CombotBackend
+Environment=PATH=/home/ec2-user/CombotBackend/venv/bin:/home/ec2-user/CombotBackend/new_env/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/ec2-user/CombotBackend/start_server.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/ec2-user/CombotBackend
+
+[Install]
+WantedBy=multi-user.target 

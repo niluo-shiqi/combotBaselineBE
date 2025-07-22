@@ -398,8 +398,8 @@ class InitialMessageAPIView(APIView):
             initial_message = {
                 "message": "The purpose of Combot is to assist you with any product or service problems you have " +
                             "experienced in the past few months. Examples of issues include defective products, delayed packages, or " +
-                            "rude frontline employees. Combot is designed to provide optimal guideance to resolve your issue. " +
-                            "Please provide a detailed account of your negative experiences, including when, how, and what occured. " +
+                            "rude frontline employees. Combot is designed to provide optimal guidance to resolve your issue. " +
+                            "Please provide a detailed account of your negative experiences, including when, how, and what occurred. " +
                             "Note that Combot specializes in handling product or service issues and is not a general-purpose " +
                             "assistant like Alexa or Siri. Let us proceed to resolve your problem."
             }

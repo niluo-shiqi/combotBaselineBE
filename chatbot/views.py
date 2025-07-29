@@ -139,7 +139,7 @@ class ChatAPIView(APIView):
         response_data['scenario'] = scenario
         
         # Add callClosingMessage flag if needed
-        if conversation_index == 5:
+        if conversation_index == 6:  # After increment, this means the original index was 5
             response_data['callClosingMessage'] = True
         
         # Debug logging for scenario data
@@ -635,7 +635,7 @@ class LuluAPIView(APIView):
         response_data['scenario'] = scenario
         
         # Add callClosingMessage flag if needed
-        if conversation_index == 5:
+        if conversation_index == 6:  # After increment, this means the original index was 5
             response_data['callClosingMessage'] = True
         
         # Debug logging for scenario data

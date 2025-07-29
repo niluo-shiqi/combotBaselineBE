@@ -5,16 +5,21 @@ import multiprocessing
 bind = "0.0.0.0:8000"
 backlog = 2048
 
-# Worker processes
-workers = multiprocessing.cpu_count() * 2 + 1
+# Worker processes - optimized for t3.medium (2 vCPUs, 4GB RAM)
+# Use 3-4 workers for better concurrency
+workers = 4  # 2 vCPUs * 2 = 4 workers
 worker_class = "sync"
 worker_connections = 1000
 timeout = 30
 keepalive = 2
 
 # Restart workers after this many requests, to help prevent memory leaks
-max_requests = 1000
-max_requests_jitter = 50
+max_requests = 5000  # Increased from 1000 to 5000
+max_requests_jitter = 500  # Increased jitter to prevent all workers restarting at once
+
+# Memory management
+max_requests_jitter = 100  # Add randomness to prevent all workers restarting at once
+worker_tmp_dir = "/dev/shm"  # Use RAM for temporary files
 
 # Logging
 accesslog = "-"
@@ -37,6 +42,10 @@ tmp_upload_dir = None
 
 # Preload app for better performance
 preload_app = True
+
+# Performance optimizations
+worker_abort_on_app_exit = True
+worker_exit_on_app_exit = True
 
 def when_ready(server):
     server.log.info("Server is ready. Spawning workers")

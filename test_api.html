@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combot API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .response {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Combot API Test</h1>
+        <p>Test your local Django backend API endpoints</p>
+        
+        <button onclick="testInitialMessage()">Test Initial Message</button>
+        <button onclick="testChat()">Test Chat</button>
+        <button onclick="testRandom()">Test Random</button>
+        
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        
+        async function testInitialMessage() {
+            try {
+                const response = await fetch(`${API_BASE}/chatbot/initial/`);
+                const data = await response.json();
+                displayResponse('Initial Message Response:', data);
+            } catch (error) {
+                displayError('Error testing initial message:', error);
+            }
+        }
+        
+        async function testChat() {
+            try {
+                const response = await fetch(`${API_BASE}/chatbot/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: "I have a problem with my order",
+                        email: "test@example.com"
+                    })
+                });
+                const data = await response.json();
+                displayResponse('Chat Response:', data);
+            } catch (error) {
+                displayError('Error testing chat:', error);
+            }
+        }
+        
+        async function testRandom() {
+            try {
+                const response = await fetch(`${API_BASE}/random/`);
+                const data = await response.json();
+                displayResponse('Random Response:', data);
+            } catch (error) {
+                displayError('Error testing random:', error);
+            }
+        }
+        
+        function displayResponse(title, data) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = `
+                <h3>${title}</h3>
+                <div class="response">${JSON.stringify(data, null, 2)}</div>
+            `;
+        }
+        
+        function displayError(title, error) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = `
+                <h3>${title}</h3>
+                <div class="response error">${error.toString()}</div>
+            `;
+        }
+    </script>
+</body>
+</html> 

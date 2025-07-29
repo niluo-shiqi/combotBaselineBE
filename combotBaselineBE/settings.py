@@ -57,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
+    'django.middleware.gzip.GZipMiddleware',  # Add compression
 ]
 
 ROOT_URLCONF = 'combotBaselineBE.urls'
@@ -97,6 +97,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # SQLite timeout
+            'check_same_thread': False,  # Allow multiple threads
+        },
+        'CONN_MAX_AGE': 60,  # Keep connections alive for 60 seconds
     }
 }
 
@@ -143,6 +148,22 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Caching configuration for better performance
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 5 minutes
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
+# Cache middleware
+CACHE_MIDDLEWARE_SECONDS = 300
+CACHE_MIDDLEWARE_KEY_PREFIX = 'combot'
+
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
@@ -158,14 +179,19 @@ CORS_ALLOWED_ORIGINS = [
 GOOGLE_SHEETS_SPREADSHEET_ID = os.getenv('GOOGLE_SHEETS_SPREADSHEET_ID')
 GOOGLE_SHEETS_CREDENTIALS_FILE = os.getenv('GOOGLE_SHEETS_CREDENTIALS_FILE')
 
-# Session Configuration
+# Session Configuration - Enhanced for conversation persistence
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 3600  # 1 hour
-SESSION_SAVE_EVERY_REQUEST = True
+SESSION_COOKIE_AGE = 7200  # 2 hours - longer sessions
+SESSION_SAVE_EVERY_REQUEST = True  # Save every request to prevent conversation loss
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript access for frontend
 SESSION_COOKIE_SAMESITE = 'Lax'  # Allow cross-site requests
+
+# Session performance optimizations
+SESSION_CACHE_ALIAS = 'default'
+SESSION_SAVE_EVERY_REQUEST = True  # Save every request to prevent conversation loss
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
 
 #this is a comment check

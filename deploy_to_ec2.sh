@@ -5,7 +5,7 @@ echo "Deploying Combot Backend to EC2..."
 
 # Configuration - Update these with your EC2 details
 EC2_USER="ec2-user"  # Amazon Linux 2023 uses ec2-user
-EC2_HOST="3.149.2.252"  # Your EC2 public IP
+EC2_HOST="18.222.168.169"  # Your EC2 public IP (t3.medium)
 EC2_KEY_PATH="~/.ssh/ec2-key-new.pem"  # Update with your key path
 PROJECT_NAME="CombotBackend"
 

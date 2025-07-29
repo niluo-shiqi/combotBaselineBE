@@ -13,6 +13,17 @@ import json
 import openai
 import os
 
+# Global ML model cache - load once and reuse
+_ml_classifier = None
+
+def get_ml_classifier():
+    """Get or create the ML classifier (singleton pattern)"""
+    global _ml_classifier
+    if _ml_classifier is None:
+        print("Loading ML classifier...")
+        _ml_classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+        print("ML classifier loaded successfully")
+    return _ml_classifier
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -70,7 +81,7 @@ class ChatAPIView(APIView):
                     # Route return requests to "Other" classification for OpenAI handling
                     class_type = "Other"
                 else:
-                    classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                    classifier = get_ml_classifier()
                     class_response = classifier(user_input)[0]
                     class_type = class_response["label"]
                     confidence = class_response["score"]
@@ -103,17 +114,20 @@ class ChatAPIView(APIView):
 
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response(scenario)
+            # Tell frontend to call closing message API after this response
+            call_closing_message = True
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 7")
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
-
+            call_closing_message = False
             
         else:
             # Conversation is complete, don't continue
             chat_response = " "
             message_type = " "
+            call_closing_message = False
         conversation_index += 1
         
         # Ensure class_type is always from the scenario
@@ -123,6 +137,10 @@ class ChatAPIView(APIView):
         response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
         # Add scenario to response for frontend to send back
         response_data['scenario'] = scenario
+        
+        # Add callClosingMessage flag if needed
+        if conversation_index == 5:
+            response_data['callClosingMessage'] = True
         
         # Debug logging for scenario data
         print(f"DEBUG: Response - conversation_index: {conversation_index}, class_type: {class_type}")
@@ -271,6 +289,14 @@ class ChatAPIView(APIView):
         return chat_response
 
     def low_question_continuation_response(self, chat_log):
+        # Parse chat_log if it's a string
+        if isinstance(chat_log, str):
+            try:
+                chat_log = json.loads(chat_log)
+            except (json.JSONDecodeError, TypeError):
+                # If parsing fails, return a default response
+                return "I see. Let me check on that for you."
+        
         chat_logs_string = json.dumps(chat_log, indent=2)
         try:
             completion = openai.ChatCompletion.create(
@@ -282,11 +308,27 @@ class ChatAPIView(APIView):
             return clean_content
         except Exception as e:
             print(f"An error occurred: {e}")
+            return "I see. Let me check on that for you."
 
 
     def select_next_response(self, chat_log, response_options):
+        # Parse chat_log if it's a string
+        if isinstance(chat_log, str):
+            try:
+                chat_log = json.loads(chat_log)
+            except (json.JSONDecodeError, TypeError):
+                # If parsing fails, return a random response
+                return random.choice(response_options) if response_options else "I understand. Could you tell me more about your situation?"
+        
         # Collect all messages from 'combot'
-        combot_messages = [message['text'] for message in chat_log if message['sender'] == 'combot']
+        combot_messages = []
+        for message in chat_log:
+            if isinstance(message, dict):
+                # Handle both 'sender' and 'role' formats
+                if message.get('sender') == 'combot' or message.get('role') == 'assistant':
+                    text = message.get('text') or message.get('content', '')
+                    if text:
+                        combot_messages.append(text)
 
         # Exclude all messages that have already been used by 'combot'
         updated_response_options = [option for option in response_options if option not in combot_messages]
@@ -294,6 +336,8 @@ class ChatAPIView(APIView):
         # Randomly select the next response from the remaining options
         if updated_response_options:  # Ensure the list is not empty
             return random.choice(updated_response_options)
+        else:
+            return "I understand. Could you tell me more about your situation?"
 
     def understanding_statement_response(self, scenario):
         feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect. Please hold on while I check with my manager..."
@@ -534,7 +578,7 @@ class LuluAPIView(APIView):
                     # Route return requests to "Other" classification for OpenAI handling
                     class_type = "Other"
                 else:
-                    classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                    classifier = get_ml_classifier()
                     class_response = classifier(user_input)[0]
                     class_type = class_response["label"]
                     confidence = class_response["score"]
@@ -566,16 +610,20 @@ class LuluAPIView(APIView):
 
         elif conversation_index == 5:
             chat_response, message_type = self.understanding_statement_response(scenario)
+            # Tell frontend to call closing message API after this response
+            call_closing_message = True
         elif conversation_index == 6:
             # Save conversation after user provides email
             print(f"DEBUG: Saving conversation at index 6 (Lulu)")
             print(f"DEBUG: Saving conversation with scenario: {scenario}")
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
+            call_closing_message = False
         else:
             # Conversation is complete, don't continue
             chat_response = " "
             message_type = " "
+            call_closing_message = False
         conversation_index += 1
         
         # Ensure class_type is always from the scenario
@@ -585,6 +633,10 @@ class LuluAPIView(APIView):
         response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
         # Add scenario to response for frontend to send back
         response_data['scenario'] = scenario
+        
+        # Add callClosingMessage flag if needed
+        if conversation_index == 5:
+            response_data['callClosingMessage'] = True
         
         # Debug logging for scenario data
         print(f"DEBUG: Lulu Response - conversation_index: {conversation_index}, class_type: {class_type}")
@@ -701,8 +753,23 @@ class LuluAPIView(APIView):
 
 
     def select_next_response(self, chat_log, response_options):
+        # Parse chat_log if it's a string
+        if isinstance(chat_log, str):
+            try:
+                chat_log = json.loads(chat_log)
+            except (json.JSONDecodeError, TypeError):
+                # If parsing fails, return a random response
+                return random.choice(response_options) if response_options else "I understand. Could you tell me more about your situation?"
+        
         # Collect all messages from 'combot'
-        combot_messages = [message['text'] for message in chat_log if message['sender'] == 'combot']
+        combot_messages = []
+        for message in chat_log:
+            if isinstance(message, dict):
+                # Handle both 'sender' and 'role' formats
+                if message.get('sender') == 'combot' or message.get('role') == 'assistant':
+                    text = message.get('text') or message.get('content', '')
+                    if text:
+                        combot_messages.append(text)
 
         # Exclude all messages that have already been used by 'combot'
         updated_response_options = [option for option in response_options if option not in combot_messages]
@@ -710,6 +777,8 @@ class LuluAPIView(APIView):
         # Randomly select the next response from the remaining options
         if updated_response_options:  # Ensure the list is not empty
             return random.choice(updated_response_options)
+        else:
+            return "I understand. Could you tell me more about your situation?"
 
     def understanding_statement_response(self, scenario):
         feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect. Please Hold on while I check with my manager..."

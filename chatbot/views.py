@@ -122,6 +122,8 @@ class ChatAPIView(APIView):
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
             call_closing_message = False
+            # This message contains HTML (survey link), so mark it for HTML rendering
+            is_html_message = True
             
         else:
             # Conversation is complete, don't continue
@@ -141,6 +143,10 @@ class ChatAPIView(APIView):
         # Add callClosingMessage flag if needed
         if conversation_index == 6:  # After increment, this means the original index was 5
             response_data['callClosingMessage'] = True
+        
+        # Add isHtml flag if this message contains HTML (survey link)
+        if conversation_index == 7:  # After increment, this means the original index was 6
+            response_data['isHtml'] = True
         
         # Debug logging for scenario data
         print(f"DEBUG: Response - conversation_index: {conversation_index}, class_type: {class_type}")
@@ -619,6 +625,8 @@ class LuluAPIView(APIView):
             chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
             message_type = " "
             call_closing_message = False
+            # This message contains HTML (survey link), so mark it for HTML rendering
+            is_html_message = True
         else:
             # Conversation is complete, don't continue
             chat_response = " "
@@ -637,6 +645,10 @@ class LuluAPIView(APIView):
         # Add callClosingMessage flag if needed
         if conversation_index == 6:  # After increment, this means the original index was 5
             response_data['callClosingMessage'] = True
+        
+        # Add isHtml flag if this message contains HTML (survey link)
+        if conversation_index == 7:  # After increment, this means the original index was 6
+            response_data['isHtml'] = True
         
         # Debug logging for scenario data
         print(f"DEBUG: Lulu Response - conversation_index: {conversation_index}, class_type: {class_type}")

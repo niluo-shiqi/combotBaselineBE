@@ -1,5 +1,6 @@
 # Gunicorn configuration file
 import multiprocessing
+import os
 
 # Server socket
 bind = "0.0.0.0:8000"
@@ -7,19 +8,18 @@ backlog = 2048
 
 # Worker processes - optimized for t3.medium (2 vCPUs, 4GB RAM)
 # Use 3-4 workers for better concurrency
-workers = 4  # 2 vCPUs * 2 = 4 workers
+workers = 3  # Reduced from 4 to 3 for better memory management
 worker_class = "sync"
 worker_connections = 1000
 timeout = 30
 keepalive = 2
 
 # Restart workers after this many requests, to help prevent memory leaks
-max_requests = 5000  # Increased from 1000 to 5000
-max_requests_jitter = 500  # Increased jitter to prevent all workers restarting at once
+max_requests = 2000  # Reduced from 5000 to 2000 for more frequent restarts
+max_requests_jitter = 200  # Reduced jitter to prevent all workers restarting at once
 
-# Memory management
-max_requests_jitter = 100  # Add randomness to prevent all workers restarting at once
-worker_tmp_dir = "/dev/shm"  # Use RAM for temporary files
+# Memory management - use system temp directory instead of /dev/shm
+worker_tmp_dir = None  # Use system default temp directory
 
 # Logging
 accesslog = "-"
@@ -46,6 +46,10 @@ preload_app = True
 # Performance optimizations
 worker_abort_on_app_exit = True
 worker_exit_on_app_exit = True
+
+# Memory management - prevent memory leaks
+worker_max_requests_jitter = 200
+worker_max_requests = 2000
 
 def when_ready(server):
     server.log.info("Server is ready. Spawning workers")

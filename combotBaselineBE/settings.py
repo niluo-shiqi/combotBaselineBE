@@ -101,7 +101,7 @@ DATABASES = {
             'timeout': 20,  # SQLite timeout
             'check_same_thread': False,  # Allow multiple threads
         },
-        'CONN_MAX_AGE': 60,  # Keep connections alive for 60 seconds
+        'CONN_MAX_AGE': 30,  # Reduced from 60 to 30 seconds for better connection management
     }
 }
 
@@ -181,8 +181,8 @@ GOOGLE_SHEETS_CREDENTIALS_FILE = os.getenv('GOOGLE_SHEETS_CREDENTIALS_FILE')
 
 # Session Configuration - Enhanced for conversation persistence
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
-SESSION_COOKIE_AGE = 7200  # 2 hours - longer sessions
-SESSION_SAVE_EVERY_REQUEST = True  # Save every request to prevent conversation loss
+SESSION_COOKIE_AGE = 3600  # Reduced from 7200 to 3600 (1 hour) for better memory management
+SESSION_SAVE_EVERY_REQUEST = False  # Changed from True to False to reduce database writes
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
 SESSION_COOKIE_HTTPONLY = False  # Allow JavaScript access for frontend
@@ -190,7 +190,6 @@ SESSION_COOKIE_SAMESITE = 'Lax'  # Allow cross-site requests
 
 # Session performance optimizations
 SESSION_CACHE_ALIAS = 'default'
-SESSION_SAVE_EVERY_REQUEST = True  # Save every request to prevent conversation loss
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
 

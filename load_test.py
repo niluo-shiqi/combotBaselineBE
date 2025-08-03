@@ -13,7 +13,7 @@ from datetime import datetime
 import statistics
 
 class LoadTester:
-    def __init__(self, base_url, num_users=20, duration_seconds=60):
+    def __init__(self, base_url, num_users=10, duration_seconds=60):
         self.base_url = base_url
         self.num_users = num_users
         self.duration_seconds = duration_seconds
@@ -221,7 +221,7 @@ async def main():
     """Main function to run the load test"""
     # Configuration
     BASE_URL = "http://18.222.168.169:8000"  # Your EC2 instance
-    NUM_USERS = 12  # Increased from 10 to 12
+    NUM_USERS = 10  # Testing with 10 users
     DURATION = 30  # Reduced from 60 to 30 seconds
     
     print("🧪 COMBOT BACKEND LOAD TESTER")

@@ -52,14 +52,24 @@ class Command(BaseCommand):
             data = []
             headers = [
                 'ID', 'Email', 'Time Spent (seconds)', 'Test Type', 'Problem Type', 
-                'Think Level', 'Feel Level', 'Endpoint Type', 'Created At', 'Chat Log', 'Message Type Log'
+                'Think Level', 'Feel Level', 'Endpoint Type', 'Created At', 'Chat Log', 'Message Type Log', 'Product Type Breakdown'
             ]
             data.append(headers)
+            
+            # Debug: Print headers
+            self.stdout.write(f"DEBUG: Headers: {headers}")
+            self.stdout.write(f"DEBUG: Number of headers: {len(headers)}")
             
             for conv in conversations:
                 # Format chat log and message type log as JSON strings
                 chat_log_str = json.dumps(conv.chat_log, indent=2) if conv.chat_log else ''
                 message_type_log_str = json.dumps(conv.message_type_log, indent=2) if conv.message_type_log else ''
+                product_type_breakdown_str = json.dumps(conv.product_type_breakdown, indent=2) if conv.product_type_breakdown else ''
+                
+                # Debug: Print product_type_breakdown for first few conversations
+                if conv.id <= 5:
+                    self.stdout.write(f"DEBUG: Conversation {conv.id} - product_type_breakdown: {conv.product_type_breakdown}")
+                    self.stdout.write(f"DEBUG: Conversation {conv.id} - product_type_breakdown_str: {product_type_breakdown_str}")
                 
                 row = [
                     conv.id,
@@ -72,8 +82,14 @@ class Command(BaseCommand):
                     getattr(conv, 'endpoint_type', 'N/A'),
                     conv.created_at.strftime('%Y-%m-%d %H:%M:%S'),
                     chat_log_str,
-                    message_type_log_str
+                    message_type_log_str,
+                    product_type_breakdown_str
                 ]
+                
+                # Debug: Print row length for first few conversations
+                if conv.id <= 5:
+                    self.stdout.write(f"DEBUG: Conversation {conv.id} - row length: {len(row)}")
+                
                 data.append(row)
             
             # Clear existing data and write new data

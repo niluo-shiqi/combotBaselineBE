@@ -9,6 +9,7 @@ class Conversation(models.Model):
     time_spent = models.IntegerField(help_text="Time spent in conversation, in seconds")
     chat_log = models.JSONField(help_text="JSON structure containing the chat log")
     message_type_log = models.JSONField(help_text="JSON structure containing the message type log")
+    product_type_breakdown = models.JSONField(help_text="JSON structure containing confidence scores for all problem types (A, B, C, Other)", null=True, blank=True)
 
     # scenario information
     test_type = models.TextField(max_length=20, default='general') # general or lulu

@@ -12,18 +12,28 @@ import random
 import json
 import openai
 import os
+import gc
+import threading
+from functools import lru_cache
 
-# Global ML model cache - load once and reuse
+# Global cache for ML model to prevent reloading on every request
 _ml_classifier = None
+_ml_classifier_lock = threading.Lock()
 
 def get_ml_classifier():
-    """Get or create the ML classifier (singleton pattern)"""
+    """Get or create the ML classifier with thread safety"""
     global _ml_classifier
     if _ml_classifier is None:
-        print("Loading ML classifier...")
-        _ml_classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
-        print("ML classifier loaded successfully")
+        with _ml_classifier_lock:
+            if _ml_classifier is None:
+                print("Loading ML classifier...")
+                _ml_classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
+                print("ML classifier loaded successfully")
     return _ml_classifier
+
+def cleanup_resources():
+    """Clean up resources to prevent memory leaks"""
+    gc.collect()
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
@@ -39,144 +49,158 @@ def create_safe_link(url, text):
 class ChatAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
-        data = request.data
-        user_input = data.get('message', '')
-        conversation_index = data.get('index', 0)
-        time_spent = data.get('timer', 0)
-        chat_log = data.get('chatLog', '')
-        class_type = data.get('classType', '')
-        message_type_log = data.get('messageTypeLog', '')
-        
-        # Get the scenario information from the session or request data
-        scenario = request.session.get('scenario')
-        if not scenario:
-            # Try to get scenario from request data (frontend fallback)
-            scenario = data.get('scenario')
-            if scenario:
-                print(f"DEBUG: Retrieved scenario from request data: {scenario}")
-                # Store it in session for future requests
-                request.session['scenario'] = scenario
-                request.session.save()
-            else:
-                print(f"DEBUG: No scenario in session or request data, using fallback")
-                scenario = {
-                    'brand': 'Basic',
-                    'problem_type': 'A',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                }
-        else:
-            print(f"DEBUG: Retrieved scenario from session: {scenario}")
-
-        if conversation_index in (0, 1, 2, 3, 4):
-            if conversation_index == 0:
-                os.environ["TRANSFORMERS_CACHE"] = "./cache"  # Optional, for local storage
-                os.environ["USE_TF"] = "0"  # Disable TensorFlow
-                
-                # Check if the user is asking about returns specifically
-                return_keywords = ['return', 'refund', 'send back', 'bring back', 'take back']
-                is_return_request = any(keyword in user_input.lower() for keyword in return_keywords)
-                
-                if is_return_request:
-                    # Route return requests to "Other" classification for OpenAI handling
-                    class_type = "Other"
-                else:
-                    classifier = get_ml_classifier()
-                    class_response = classifier(user_input)[0]
-                    class_type = class_response["label"]
-                    confidence = class_response["score"]
-
-                    # If the model predicts not-Other with very low confidence, treat as Other
-                    if class_type != "Other" and confidence < 0.6:
-                        class_type = "Other"
-                    print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
-                
-                # Update the scenario with the actual problem type from classifier
-                scenario['problem_type'] = class_type
-                request.session['scenario'] = scenario
-                
-                chat_response = self.question_initial_response(class_type, user_input, scenario)
-                message_type = scenario['think_level']
-                if chat_response.startswith("Paraphrased: "):
-                    message_type = "Low"
-                    chat_response = chat_response[len("Paraphrased: "):]
-                message_type += class_type
-            elif conversation_index in (1, 2, 3, 4):
-                # Get class_type from the updated scenario, not from request data
-                class_type = scenario.get('problem_type', 'Other')
-                # Use scenario's think_level to determine response type
-                if scenario['think_level'] == "Low":
-                    chat_response = self.low_question_continuation_response(chat_log)
-                    message_type = " "
-                else:  # High think level
-                    chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
-                    message_type = " "
-
-        elif conversation_index == 5:
-            chat_response, message_type = self.understanding_statement_response(scenario)
-            # Tell frontend to call closing message API after this response
-            call_closing_message = True
-        elif conversation_index == 6:
-            # Save conversation after user provides email
-            print(f"DEBUG: Saving conversation at index 7")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
-            message_type = " "
-            call_closing_message = False
-            # This message contains HTML (survey link), so mark it for HTML rendering
-            is_html_message = True
+        try:
+            data = request.data
+            user_input = data.get('message', '')
+            conversation_index = data.get('index', 0)
+            time_spent = data.get('timer', 0)
+            chat_log = data.get('chatLog', '')
+            class_type = data.get('classType', '')
+            message_type_log = data.get('messageTypeLog', '')
             
-        else:
-            # Conversation is complete, don't continue
-            chat_response = " "
-            message_type = " "
-            call_closing_message = False
-        conversation_index += 1
-        
-        # Ensure class_type is always from the scenario
-        if not class_type or class_type == "":
-            class_type = scenario.get('problem_type', 'Other')
-        
-        response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
-        # Add scenario to response for frontend to send back
-        response_data['scenario'] = scenario
-        
-        # Add callClosingMessage flag if needed
-        if conversation_index == 6:  # After increment, this means the original index was 5
-            response_data['callClosingMessage'] = True
-        
-        # Add isHtml flag if this message contains HTML (survey link)
-        if conversation_index == 7:  # After increment, this means the original index was 6
-            response_data['isHtml'] = True
-        
-        # Debug logging for scenario data
-        print(f"DEBUG: Response - conversation_index: {conversation_index}, class_type: {class_type}")
-        print(f"DEBUG: Response - scenario: {scenario}")
-        
-        return Response(response_data, status=status.HTTP_200_OK)
+            # Get the scenario information from the session or request data
+            scenario = request.session.get('scenario')
+            if not scenario:
+                # Try to get scenario from request data (frontend fallback)
+                scenario = data.get('scenario')
+                if scenario:
+                    print(f"DEBUG: Retrieved scenario from request data: {scenario}")
+                    # Store it in session for future requests
+                    request.session['scenario'] = scenario
+                    request.session.save()
+                else:
+                    print(f"DEBUG: No scenario in session or request data, using fallback")
+                    scenario = {
+                        'brand': 'Basic',
+                        'problem_type': 'A',
+                        'think_level': 'High',
+                        'feel_level': 'High'
+                    }
+            else:
+                print(f"DEBUG: Retrieved scenario from session: {scenario}")
+
+            if conversation_index in (0, 1, 2, 3, 4):
+                if conversation_index == 0:
+                    os.environ["TRANSFORMERS_CACHE"] = "./cache"  # Optional, for local storage
+                    os.environ["USE_TF"] = "0"  # Disable TensorFlow
+                    
+                    # Check if the user is asking about returns specifically
+                    return_keywords = ['return', 'refund', 'send back', 'bring back', 'take back']
+                    is_return_request = any(keyword in user_input.lower() for keyword in return_keywords)
+                    
+                    if is_return_request:
+                        # Route return requests to "Other" classification for OpenAI handling
+                        class_type = "Other"
+                    else:
+                        # Use cached ML classifier instead of loading on every request
+                        try:
+                            classifier = get_ml_classifier()
+                            class_response = classifier(user_input)[0]
+                            class_type = class_response["label"]
+                            confidence = class_response["score"]
+
+                            # If the model predicts not-Other with very low confidence, treat as Other
+                            if class_type != "Other" and confidence < 0.6:
+                                class_type = "Other"
+                            print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
+                        except Exception as e:
+                            print(f"ERROR: ML classifier failed: {e}")
+                            class_type = "Other"
+                    
+                    # Update the scenario with the actual problem type from classifier
+                    scenario['problem_type'] = class_type
+                    request.session['scenario'] = scenario
+                    
+                    chat_response = self.question_initial_response(class_type, user_input, scenario)
+                    message_type = scenario['think_level']
+                    if chat_response.startswith("Paraphrased: "):
+                        message_type = "Low"
+                        chat_response = chat_response[len("Paraphrased: "):]
+                    message_type += class_type
+                elif conversation_index in (1, 2, 3, 4):
+                    # Get class_type from the updated scenario, not from request data
+                    class_type = scenario.get('problem_type', 'Other')
+                    # Use scenario's think_level to determine response type
+                    if scenario['think_level'] == "Low":
+                        chat_response = self.low_question_continuation_response(chat_log)
+                        message_type = " "
+                    else:  # High think level
+                        chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
+                        message_type = " "
+
+            elif conversation_index == 5:
+                chat_response, message_type = self.understanding_statement_response(scenario)
+                # Tell frontend to call closing message API after this response
+                call_closing_message = True
+            elif conversation_index == 6:
+                # Save conversation after user provides email
+                print(f"DEBUG: Saving conversation at index 7")
+                chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+                message_type = " "
+                call_closing_message = False
+                # This message contains HTML (survey link), so mark it for HTML rendering
+                is_html_message = True
+                
+            else:
+                # Conversation is complete, don't continue
+                chat_response = " "
+                message_type = " "
+                call_closing_message = False
+            conversation_index += 1
+            
+            # Ensure class_type is always from the scenario
+            if not class_type or class_type == "":
+                class_type = scenario.get('problem_type', 'Other')
+            
+            response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
+            # Add scenario to response for frontend to send back
+            response_data['scenario'] = scenario
+            
+            # Add callClosingMessage flag if needed
+            if conversation_index == 6:  # After increment, this means the original index was 5
+                response_data['callClosingMessage'] = True
+            
+            # Add isHtml flag if this message contains HTML (survey link)
+            if conversation_index == 7:  # After increment, this means the original index was 6
+                response_data['isHtml'] = True
+            
+            # Debug logging for scenario data
+            print(f"DEBUG: Response - conversation_index: {conversation_index}, class_type: {class_type}")
+            print(f"DEBUG: Response - scenario: {scenario}")
+            
+            # Clean up resources after processing
+            cleanup_resources()
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            print(f"ERROR in ChatAPIView: {e}")
+            cleanup_resources()
+            return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def question_initial_response(self, class_type, user_input, scenario):
         if scenario['brand'] == "Lulu":
             A_responses_high = [
-                "Could you outline the problem with more precision?",
-                "When exactly did you first come across the issue?",
-                "Have you attempted any specific steps to rectify this problem yourself?",
-                "Have you strictly adhered to the guidelines and used the product as directed?",
-                "What specific outcome are you seeking to resolve this issue?",
+                "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
+                "When did you first notice this wasn't performing as expected?",
+                "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
+                "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
+                "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
             ]
 
             B_responses_high = [
-                "Can you confirm the expected delivery date for your order?",
-                "Have you been notified of any updates about your delivery status?",
-                "Have you already contacted the carrier or delivery service to inquire about your package?",
-                "Would you prefer a refund or store credit for this inconvenience?",
-                "Do you wish to continue waiting for your order, or would you rather cancel it at this point?",
+                "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
+                "Have you received any updates about your delivery status? We're tracking this closely.",
+                "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
+                "Would you prefer a refund or store credit? We want to make this right for you.",
+                "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
             ]
 
             C_responses_high = [
-                "Could you provide us with a detailed account of your interaction with the employee?",
-                "When and where exactly did this interaction occur?",
-                "Can you identify a specific incident or a sequence of events that contributed to your feeling mistreated?",
-                "In what ways did the employee's behavior come across as rude or disrespectful?",
+                "I'd love to hear more about your experience with our team member. Can you share the details?",
+                "When and where did this interaction happen? We want to understand the full picture.",
+                "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
+                "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
             ]
         else:  # Basic
             A_responses_high = [
@@ -229,27 +253,27 @@ class ChatAPIView(APIView):
     def high_question_continuation_response(self, class_type, chat_log, scenario):
         if scenario['brand'] == "Lulu":
             A_responses_high = [
-                "Could you outline the problem with more precision?",
-                "When exactly did you first come across the issue?",
-                "Have you attempted any specific steps to rectify this problem yourself?",
-                "Have you strictly adhered to the guidelines and used the product as directed?",
-                "What specific outcome are you seeking to resolve this issue?",
-            ]
+            "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
+            "When did you first notice this wasn't performing as expected?",
+            "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
+            "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
+            "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
+        ]
 
             B_responses_high = [
-                "Can you confirm the expected delivery date for your order?",
-                "Have you been notified of any updates about your delivery status?",
-                "Have you already contacted the carrier or delivery service to inquire about your package?",
-                "Would you prefer a refund or store credit for this inconvenience?",
-                "Do you wish to continue waiting for your order, or would you rather cancel it at this point?",
-            ]
+            "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
+            "Have you received any updates about your delivery status? We're tracking this closely.",
+            "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
+            "Would you prefer a refund or store credit? We want to make this right for you.",
+            "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
+        ]
 
             C_responses_high = [
-                "Could you provide us with a detailed account of your interaction with the employee?",
-                "When and where exactly did this interaction occur?",
-                "Can you identify a specific incident or a sequence of events that contributed to your feeling mistreated?",
-                "In what ways did the employee's behavior come across as rude or disrespectful?",
-            ]
+            "I'd love to hear more about your experience with our team member. Can you share the details?",
+            "When and where did this interaction happen? We want to understand the full picture.",
+            "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
+            "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
+        ]
         else:  # Basic
             A_responses_high = [
                 "Can you describe the problem in more detail?",
@@ -286,7 +310,7 @@ class ChatAPIView(APIView):
             try:
                 completion = openai.ChatCompletion.create(
                     model="gpt-4-turbo-preview",
-                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional and helpful. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
+                    messages=[{"role": "assistant", "content": "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional, efficient and helpful. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
                 )
                 chat_response = completion["choices"][0]["message"]["content"].strip('"')
             except Exception as e:
@@ -307,7 +331,7 @@ class ChatAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Make sure your response is different each time. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "You are a customer service representative who is well-intentioned but not very effective. Based on the chat log below, provide a response that is: 1) Slightly generic or vague, 2) Doesn't ask the most relevant follow-up questions, 3) May miss key details from the customer's complaint, 4) Still professional and polite but not very helpful. Make it realistic - like a well-meaning but inexperienced customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"')
@@ -442,16 +466,16 @@ class InitialMessageAPIView(APIView):
                             "guidance to resolve your issue. Please start by recounting your bad experiences with as many " +
                             "details as possible (when, how, and what happened). " +
                             "While I specialize in handling these issues, I am not Alexa or Siri. " +
-                            "Let's work together to resolve your problem!"
+                            "Let's work together to resolve your problem!" + " Please state your problem immediately following this message!"
             }
         elif think_level == "Low":
             initial_message = {
                 "message": "The purpose of Combot is to assist you with any product or service problems you have " +
                             "experienced in the past few months. Examples of issues include defective products, delayed packages, or " +
-                            "rude frontline employees. Combot is designed to provide optimal guideance to resolve your issue. " +
-                            "Please provide a detailed account of your negative experiences, including when, how, and what occured. " +
+                            "rude frontline employees. Combot is designed to provide optimal guidance to resolve your issue. " +
+                            "Please provide a detailed account of your negative experiences, including when, how, and what occurred. " +
                             "Note that Combot specializes in handling product or service issues and is not a general-purpose " +
-                            "assistant like Alexa or Siri. Let us proceed to resolve your problem."
+                            "assistant like Alexa or Siri. Let us proceed to resolve your problem." + " Please state your problem immediately following this message."
             }
 
         # Include all scenario information in the response
@@ -499,15 +523,11 @@ class LuluInitialMessageAPIView(APIView):
         
         if think_level == "High":
             initial_message = {
-                "message": "Hi there! I'm Lululemon's Combot, and it's great to meet you. I'm here to help with any product or " +
-                           "service problems you may have encountered in the past few months. My goal is to make sure you receive " +
-                           "the best guidance from me. Let's work together to resolve your issue!"
+                "message": "Hey there! I'm your Lululemon Combot, and I'm stoked to connect with you today. I'm here to help with any gear or service experiences you've had in the past few months. My intention is to make sure you feel supported and heard throughout our conversation. Let's work together to get you back to feeling amazing!" + " Please state your problem immediately following this message!"
             }
         elif think_level == "Low":
             initial_message = {
-                "message": "The purpose of Lululemon's Combot is to assist with resolution of product/service problems. " +
-                           "If you have experienced any issues in the past few months, Combot is designed to guide you through " +
-                           "finding the optimal solution."
+                "message": "Welcome to Lululemon's Combot. I'm here to help you with any gear or service issues you've experienced recently. If you've had any challenges with your gear or our community, I'm ready to support you in finding the best solution. Let's make sure you're feeling confident and comfortable with your gear." + " Please state your problem immediately following this message."
             }
 
         # Include all scenario information in the response
@@ -540,145 +560,159 @@ class LuluClosingMessageAPIView(APIView):
 class LuluAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
-        data = request.data
-        user_input = data.get('message', '')
-        conversation_index = data.get('index', 0)
-        time_spent = data.get('timer', 0)
-        chat_log = data.get('chatLog', '')
-        class_type = data.get('classType', '')
-        message_type_log = data.get('messageTypeLog', '')
+        try:
+            data = request.data
+            user_input = data.get('message', '')
+            conversation_index = data.get('index', 0)
+            time_spent = data.get('timer', 0)
+            chat_log = data.get('chatLog', '')
+            class_type = data.get('classType', '')
+            message_type_log = data.get('messageTypeLog', '')
 
-        # Debug session information
-        print(f"DEBUG: Lulu POST request - Session ID: {request.session.session_key}")
-        print(f"DEBUG: Lulu POST request - Session keys: {list(request.session.keys())}")
-        print(f"DEBUG: Lulu POST request - Session modified: {request.session.modified}")
+            # Debug session information
+            print(f"DEBUG: Lulu POST request - Session ID: {request.session.session_key}")
+            print(f"DEBUG: Lulu POST request - Session keys: {list(request.session.keys())}")
+            print(f"DEBUG: Lulu POST request - Session modified: {request.session.modified}")
 
-        # Get scenario from session - ensure it's always available
-        scenario = request.session.get('scenario')
-        if not scenario:
-            # Try to get scenario from request data (frontend fallback)
-            scenario = data.get('scenario')
-            if scenario:
-                print(f"DEBUG: Retrieved scenario from request data (Lulu): {scenario}")
-                # Store it in session for future requests
-                request.session['scenario'] = scenario
-                request.session.save()
-            else:
-                print(f"DEBUG: No scenario in session or request data (Lulu), using fallback")
-                scenario = {
-                    'brand': 'Lulu',
-                    'problem_type': 'A',
-                    'think_level': 'High',
-                    'feel_level': 'High'
-                }
-        else:
-            print(f"DEBUG: Retrieved scenario from session (Lulu): {scenario}")
-
-        if conversation_index in (0, 1, 2, 3, 4):
-            if conversation_index == 0:
-                # Check if the user is asking about returns specifically
-                return_keywords = ['return', 'refund', 'send back', 'bring back', 'take back']
-                is_return_request = any(keyword in user_input.lower() for keyword in return_keywords)
-                
-                if is_return_request:
-                    # Route return requests to "Other" classification for OpenAI handling
-                    class_type = "Other"
+            # Get scenario from session - ensure it's always available
+            scenario = request.session.get('scenario')
+            if not scenario:
+                # Try to get scenario from request data (frontend fallback)
+                scenario = data.get('scenario')
+                if scenario:
+                    print(f"DEBUG: Retrieved scenario from request data (Lulu): {scenario}")
+                    # Store it in session for future requests
+                    request.session['scenario'] = scenario
+                    request.session.save()
                 else:
-                    classifier = get_ml_classifier()
-                    class_response = classifier(user_input)[0]
-                    class_type = class_response["label"]
-                    confidence = class_response["score"]
+                    print(f"DEBUG: No scenario in session or request data (Lulu), using fallback")
+                    scenario = {
+                        'brand': 'Lulu',
+                        'problem_type': 'A',
+                        'think_level': 'High',
+                        'feel_level': 'High'
+                    }
+            else:
+                print(f"DEBUG: Retrieved scenario from session (Lulu): {scenario}")
 
-                    # If the model predicts not-Other with very low confidence, treat as Other
-                    if class_type != "Other" and confidence < 6:
+            if conversation_index in (0, 1, 2, 3, 4):
+                if conversation_index == 0:
+                    # Check if the user is asking about returns specifically
+                    return_keywords = ['return', 'refund', 'send back', 'bring back', 'take back']
+                    is_return_request = any(keyword in user_input.lower() for keyword in return_keywords)
+                    
+                    if is_return_request:
+                        # Route return requests to "Other" classification for OpenAI handling
                         class_type = "Other"
-                    print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
-                # Update the scenario with the actual problem type from classifier
-                scenario['problem_type'] = class_type
-                request.session['scenario'] = scenario
-                
-                chat_response = self.question_initial_response(class_type, user_input)
-                message_type = scenario['think_level']
-                if chat_response.startswith("Paraphrased: "):
-                    message_type = "Low"
-                    chat_response = chat_response[len("Paraphrased: "):]
-                message_type += class_type
-            elif conversation_index in (1, 2, 3, 4):
-                # Get class_type from the updated scenario, not from request data
-                class_type = scenario.get('problem_type', 'Other')
-                # Use scenario's think_level to determine response type
-                if scenario['think_level'] == "Low":
-                    chat_response = self.low_question_continuation_response(chat_log)
-                    message_type = " "
-                else:  # High think level
-                    chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
-                    message_type = " "
+                    else:
+                        # Use cached ML classifier instead of loading on every request
+                        try:
+                            classifier = get_ml_classifier()
+                            class_response = classifier(user_input)[0]
+                            class_type = class_response["label"]
+                            confidence = class_response["score"]
 
-        elif conversation_index == 5:
-            chat_response, message_type = self.understanding_statement_response(scenario)
-            # Tell frontend to call closing message API after this response
-            call_closing_message = True
-        elif conversation_index == 6:
-            # Save conversation after user provides email
-            print(f"DEBUG: Saving conversation at index 6 (Lulu)")
-            print(f"DEBUG: Saving conversation with scenario: {scenario}")
-            chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
-            message_type = " "
-            call_closing_message = False
-            # This message contains HTML (survey link), so mark it for HTML rendering
-            is_html_message = True
-        else:
-            # Conversation is complete, don't continue
-            chat_response = " "
-            message_type = " "
-            call_closing_message = False
-        conversation_index += 1
-        
-        # Ensure class_type is always from the scenario
-        if not class_type or class_type == "":
-            class_type = scenario.get('problem_type', 'Other')
-        
-        response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
-        # Add scenario to response for frontend to send back
-        response_data['scenario'] = scenario
-        
-        # Add callClosingMessage flag if needed
-        if conversation_index == 6:  # After increment, this means the original index was 5
-            response_data['callClosingMessage'] = True
-        
-        # Add isHtml flag if this message contains HTML (survey link)
-        if conversation_index == 7:  # After increment, this means the original index was 6
-            response_data['isHtml'] = True
-        
-        # Debug logging for scenario data
-        print(f"DEBUG: Lulu Response - conversation_index: {conversation_index}, class_type: {class_type}")
-        print(f"DEBUG: Lulu Response - scenario: {scenario}")
-        
-        return Response(response_data, status=status.HTTP_200_OK)
+                            # If the model predicts not-Other with very low confidence, treat as Other
+                            if class_type != "Other" and confidence < 0.1:
+                                class_type = "Other"
+                            print(f"DEBUG: ML classifier result - class: {class_type}, confidence: {confidence}")
+                        except Exception as e:
+                            print(f"ERROR: ML classifier failed: {e}")
+                            class_type = "Other"
+                    # Update the scenario with the actual problem type from classifier
+                    scenario['problem_type'] = class_type
+                    request.session['scenario'] = scenario
+                    
+                    chat_response = self.question_initial_response(class_type, user_input)
+                    message_type = scenario['think_level']
+                    if chat_response.startswith("Paraphrased: "):
+                        message_type = "Low"
+                        chat_response = chat_response[len("Paraphrased: "):]
+                    message_type += class_type
+                elif conversation_index in (1, 2, 3, 4):
+                    # Get class_type from the updated scenario, not from request data
+                    class_type = scenario.get('problem_type', 'Other')
+                    # Use scenario's think_level to determine response type
+                    if scenario['think_level'] == "Low":
+                        chat_response = self.low_question_continuation_response(chat_log)
+                        message_type = " "
+                    else:  # High think level
+                        chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
+                        message_type = " "
+
+            elif conversation_index == 5:
+                chat_response, message_type = self.understanding_statement_response(scenario)
+                # Tell frontend to call closing message API after this response
+                call_closing_message = True
+            elif conversation_index == 6:
+                # Save conversation after user provides email
+                print(f"DEBUG: Saving conversation at index 6 (Lulu)")
+                print(f"DEBUG: Saving conversation with scenario: {scenario}")
+                chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
+                message_type = " "
+                call_closing_message = False
+                # This message contains HTML (survey link), so mark it for HTML rendering
+                is_html_message = True
+            else:
+                # Conversation is complete, don't continue
+                chat_response = " "
+                message_type = " "
+                call_closing_message = False
+            conversation_index += 1
+            
+            # Ensure class_type is always from the scenario
+            if not class_type or class_type == "":
+                class_type = scenario.get('problem_type', 'Other')
+            
+            response_data = {"reply": chat_response, "index": conversation_index, "classType": class_type, "messageType": message_type}
+            # Add scenario to response for frontend to send back
+            response_data['scenario'] = scenario
+            
+            # Add callClosingMessage flag if needed
+            if conversation_index == 6:  # After increment, this means the original index was 5
+                response_data['callClosingMessage'] = True
+            
+            # Add isHtml flag if this message contains HTML (survey link)
+            if conversation_index == 7:  # After increment, this means the original index was 6
+                response_data['isHtml'] = True
+            
+            # Debug logging for scenario data
+            print(f"DEBUG: Lulu Response - conversation_index: {conversation_index}, class_type: {class_type}")
+            print(f"DEBUG: Lulu Response - scenario: {scenario}")
+            
+            # Clean up resources after processing
+            cleanup_resources()
+            
+            return Response(response_data, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            print(f"ERROR in LuluAPIView: {e}")
+            cleanup_resources()
+            return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def question_initial_response(self, class_type, user_input):
 
         A_responses_high = [
-            "Could you outline the problem with more precision?",
-            "When exactly did you first come across the issue?",
-            "Have you attempted any specific steps to rectify this problem yourself?",
-            "Have you strictly adhered to the guidelines and used the product as directed?",
-            "What specific outcome are you seeking to resolve this issue?",
+            "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
+            "When did you first notice this wasn't performing as expected?",
+            "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
+            "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
+            "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
         ]
 
         B_responses_high = [
-            "Can you confirm the expected delivery date for your order?",
-            "Have you been notified of any updates about your delivery status?",
-            "Have you already contacted the carrier or delivery service to inquire about your package?",
-            "Would you prefer a refund or store credit for this inconvenience?",
-            "Do you wish to continue waiting for your order, or would you rather cancel it at this point?",
+            "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
+            "Have you received any updates about your delivery status? We're tracking this closely.",
+            "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
+            "Would you prefer a refund or store credit? We want to make this right for you.",
+            "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
         ]
 
         C_responses_high = [
-            "Could you provide us with a detailed account of your interaction with the employee?",
-            "When and where exactly did this interaction occur?",
-            "Can you identify a specific incident or a sequence of events that contributed to your feeling mistreated?",
-            "In what ways did the employee's behavior come across as rude or disrespectful?",
+            "I'd love to hear more about your experience with our team member. Can you share the details?",
+            "When and where did this interaction happen? We want to understand the full picture.",
+            "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
+            "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
         ]
 
         if class_type == "A":
@@ -699,7 +733,7 @@ class LuluAPIView(APIView):
         elif class_type == "Other":
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint back to them, ask them if its correct, then ask them to provide more information. Here's the complaint: " + user_input}],
+                messages=[{"role": "assistant", "content": "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention' or other lululemon terms. Paraphrase the following customer complaint back to them, ask them if it's correct, then ask them to provide more information. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: " + user_input}],
             )
             chat_response = completion["choices"][0]["message"]["content"].strip('"')
 
@@ -708,26 +742,26 @@ class LuluAPIView(APIView):
     def high_question_continuation_response(self, class_type, chat_log, scenario):
 
         A_responses_high = [
-            "Could you outline the problem with more precision?",
-            "When exactly did you first come across the issue?",
-            "Have you attempted any specific steps to rectify this problem yourself?",
-            "Have you strictly adhered to the guidelines and used the product as directed?",
-            "What specific outcome are you seeking to resolve this issue?",
+            "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
+            "When did you first notice this wasn't performing as expected?",
+            "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
+            "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
+            "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
         ]
 
         B_responses_high = [
-            "Can you confirm the expected delivery date for your order?",
-            "Have you been notified of any updates about your delivery status?",
-            "Have you already contacted the carrier or delivery service to inquire about your package?",
-            "Would you prefer a refund or store credit for this inconvenience?",
-            "Do you wish to continue waiting for your order, or would you rather cancel it at this point?",
+            "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
+            "Have you received any updates about your delivery status? We're tracking this closely.",
+            "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
+            "Would you prefer a refund or store credit? We want to make this right for you.",
+            "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
         ]
 
         C_responses_high = [
-            "Could you provide us with a detailed account of your interaction with the employee?",
-            "When and where exactly did this interaction occur?",
-            "Can you identify a specific incident or a sequence of events that contributed to your feeling mistreated?",
-            "In what ways did the employee's behavior come across as rude or disrespectful?",
+            "I'd love to hear more about your experience with our team member. Can you share the details?",
+            "When and where did this interaction happen? We want to understand the full picture.",
+            "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
+            "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
         ]
 
         if class_type == "A":
@@ -742,7 +776,7 @@ class LuluAPIView(APIView):
             try:
                 completion = openai.ChatCompletion.create(
                     model="gpt-4-turbo-preview",
-                    messages=[{"role": "assistant", "content": "You are a helpful customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional and helpful. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
+                    messages=[{"role": "assistant", "content": "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional, efficient and helpful. Start directly with the customer-facing message. Here's the chat log: " + chat_logs_string}]
                 )
                 chat_response = completion["choices"][0]["message"]["content"].strip('"')
             except Exception as e:
@@ -755,7 +789,7 @@ class LuluAPIView(APIView):
         try:
             completion = openai.ChatCompletion.create(
                 model="gpt-4-turbo-preview",
-                messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Speak with Lululemon-esque language. Based on the chat log below, provide a response that is unhelpful, boring, and frustrating for the customer. Make sure your response is different each time. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
+                messages=[{"role": "assistant", "content": "You are a Lululemon customer service representative who is well-intentioned but not very effective. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a response that is: 1) Slightly generic or vague, 2) Doesn't ask the most relevant follow-up questions, 3) May miss key details from the customer's complaint, 4) Still professional and polite but not very helpful. Make it realistic - like a well-meaning but inexperienced customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: " +
                                                            chat_logs_string}]
             )
             clean_content = completion["choices"][0]["message"]["content"].strip('"')
@@ -793,7 +827,11 @@ class LuluAPIView(APIView):
             return "I understand. Could you tell me more about your situation?"
 
     def understanding_statement_response(self, scenario):
-        feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect. Please Hold on while I check with my manager..."
+        if scenario['brand'] == "Lulu":
+            feel_response_high = "I totally understand how frustrating this must be for you. That's definitely not the experience we want you to have with your gear. Let me connect with my team to make sure we get this sorted out for you..."
+            
+        else:
+            feel_response_high = "I understand how frustrating this must be for you. That's definitely not what we expect. Please hold on while I check with my manager..."
         feel_response_low = ""
 
         # Use the feel_level from the scenario
@@ -805,14 +843,14 @@ class LuluAPIView(APIView):
     def conversation_index_10_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Paraphrase the following customer complaint, ask if its correct, then ask them to provide more information. Here's the complaint: " + user_input}]
+            messages=[{"role": "assistant", "content": "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase the following customer complaint, ask if it's correct, then ask them to provide more information. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: " + user_input}]
         )
         return completion["choices"][0]["message"]["content"].strip('"')
 
     def paraphrase_response(self, user_input):
         completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
-            messages=[{"role": "assistant", "content": "You are a customer service bot for Lululemon. Be helpful and chipper. Try to resolve the issue the user is having by asking follow up questions and providing relevant information. " + user_input}]
+            messages=[{"role": "assistant", "content": "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase the following customer complaint back to them, ask them if it's correct, then ask them to provide more information. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: " + user_input}]
         )
         return "Paraphrased: " + completion["choices"][0]["message"]["content"].strip('"')
 
@@ -993,29 +1031,35 @@ class RandomEndpointAPIView(APIView):
     def post(self, request, *args, **kwargs):
         # Handle POST requests (main chat functionality)
         
-        # Get scenario from session - if it doesn't exist, that's a problem
-        scenario = request.session.get('scenario')
-        if scenario:
-            print(f"DEBUG: POST request - using existing scenario: {scenario}")
-        else:
-            # Fallback scenario - this should rarely be needed
-            scenario = {
-                'brand': 'error',
-                'problem_type': 'error',
-                'think_level': 'error',
-                'feel_level': 'error'
-            }
-        
-        # Use scenario brand to determine which view to use
-        if scenario['brand'] == 'Lulu':
-            # Use the Lulu API view
-            lulu_view = LuluAPIView()
-            return lulu_view.post(request, *args, **kwargs)
-        else:
-            # Use the general API view
-            general_view = ChatAPIView()
-            response = general_view.post(request, *args, **kwargs)
-            # Add scenario to response for frontend to send back
-            if hasattr(response, 'data'):
-                response.data['scenario'] = scenario
-            return response
+        try:
+            # Get scenario from session - if it doesn't exist, that's a problem
+            scenario = request.session.get('scenario')
+            if scenario:
+                print(f"DEBUG: POST request - using existing scenario: {scenario}")
+            else:
+                # Fallback scenario - this should rarely be needed
+                scenario = {
+                    'brand': 'error',
+                    'problem_type': 'error',
+                    'think_level': 'error',
+                    'feel_level': 'error'
+                }
+            
+            # Use scenario brand to determine which view to use
+            if scenario['brand'] == 'Lulu':
+                # Use the Lulu API view
+                lulu_view = LuluAPIView()
+                return lulu_view.post(request, *args, **kwargs)
+            else:
+                # Use the general API view
+                general_view = ChatAPIView()
+                response = general_view.post(request, *args, **kwargs)
+                # Add scenario to response for frontend to send back
+                if hasattr(response, 'data'):
+                    response.data['scenario'] = scenario
+                return response
+                
+        except Exception as e:
+            print(f"ERROR in RandomEndpointAPIView: {e}")
+            cleanup_resources()
+            return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

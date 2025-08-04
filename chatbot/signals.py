@@ -26,6 +26,11 @@ def export_to_google_sheets(sender, instance, created, **kwargs):
         safe_debug_print(f"DEBUG: Skipping export - conversation was updated, not created")
         return
     
+    # Skip temporary conversations (used for storing product_type_breakdown data)
+    if instance.email == "temp@temp.com":
+        safe_debug_print(f"DEBUG: Skipping export - temporary conversation with email temp@temp.com")
+        return
+    
     # Check if Google Sheets integration is configured
     spreadsheet_id = getattr(settings, 'GOOGLE_SHEETS_SPREADSHEET_ID', None)
     credentials_file = getattr(settings, 'GOOGLE_SHEETS_CREDENTIALS_FILE', 'credentials.json')

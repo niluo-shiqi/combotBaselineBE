@@ -65,13 +65,14 @@ def get_primary_problem_type(scores):
     primary_type = max(scores, key=scores.get)
     return primary_type, scores[primary_type]
 
-def get_openai_response(brand, think_level, problem_type, response_type, user_input=None, chat_log=None):
+def get_openai_response(brand, think_level, feel_level, problem_type, response_type, user_input=None, chat_log=None):
     """
     Consolidated function to handle all OpenAI chat completions based on scenario parameters.
     
     Args:
         brand (str): 'Basic' or 'Lulu'
         think_level (str): 'High' or 'Low'
+        feel_level (str): 'High' or 'Low'
         problem_type (str): 'A', 'B', 'C', or 'Other'
         response_type (str): 'initial', 'continuation', 'paraphrase', 'index_10', 'low_continuation'
         user_input (str): Customer's input message (for initial, paraphrase, index_10)
@@ -85,43 +86,75 @@ def get_openai_response(brand, think_level, problem_type, response_type, user_in
     prompts = {
         # Basic brand prompts
         'Basic': {
-            'High': {
-                'initial': "You are a helpful customer service bot. Paraphrase the following customer complaint and ask them to provide more detailed information to help resolve their issue. Here's the complaint: ",
-                'continuation': "You are a customer service representative. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional, efficient and helpful. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: ",
-                'paraphrase': "Pretend you're a customer service bot. Paraphrase what the customer says, then continue the conversation naturally. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
-                'index_10': "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: ",
-                'low_continuation': "You are a customer service representative who is not very effective. Based on the chat log below, provide a response that is: 1) Generic and vague, 2) Doesn't ask relevant follow-up questions, 3) Misses key details from the customer's complaint, 4) Professional but not helpful or empathetic, 5) Brief and to the point without showing much concern. Make it realistic - like an inexperienced or indifferent customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+            'High': { # High think
+                'High': { # High feel
+                    'initial': "You are a customer service bot. You are empathetic to the customer's situation, efficient in problem-solving, and helpful. Paraphrase the following customer complaint and ask them to provide more detailed information to help resolve their issue. Limit your response to 5 sentences or less.  Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the complaint: ",
+                    'continuation': "You are a customer service bot. You are empathetic to the customer's situation, efficient in problem-solving, and helpful. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional, efficient and helpful. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: ",
+                    'paraphrase': "You are a customer service bot. You are empathetic to the customer's situation, efficient in problem-solving, and helpful. Paraphrase what the customer says, then continue the conversation naturally. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a customer service bot. You are empathetic to the customer's situation, efficient in problem-solving, and helpful. Paraphrase the following customer complaint and ask them to provide more information. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Limit your response to 5 sentences or less. Here's the complaint: "
+                },
+                'Low': { # Low feel
+                    'initial': "You are a customer service bot. You are robotic and unempathetic but you are still efficient at solving the customer's problem. Paraphrase the following customer complaint and ask them to provide more detailed information to help resolve their issue. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a customer service bot. You are robotic and unempathetic but you are still efficient at solving the customer's problem. Based on the chat log below, provide relevant responses to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional, efficient, and unemotional.  Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: ",
+                    'paraphrase': "You are a customer service bot. You are robotic and unempathetic but you are still efficient at solving the customer's problem. Paraphrase what the customer says, then continue the conversation naturally. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a customer service bot. You are robotic and unempathetic but you are still efficient at solving the customer's problem. Paraphrase the following customer complaint and ask them to provide more information. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: "
+                }
             },
-            'Low': {
-                'initial': "You are a customer service bot who is not very effective. Provide a brief, generic response to the customer complaint without asking detailed follow-up questions. Be professional but not very helpful. Here's the complaint: ",
-                'continuation': "You are a customer service representative who is not very effective. Provide a brief, generic response to continue the conversation. Don't ask detailed follow-up questions or show much concern. Be professional but not very helpful. Start directly with the customer-facing message. Here's the chat log: ",
-                'paraphrase': "You are a customer service bot who is not very effective. Briefly paraphrase what the customer says, then provide a generic response. Be professional but not very helpful. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
-                'index_10': "You are a customer service bot. Paraphrase the following customer complaint and ask them to provide more information. Here's the complaint: ",
-                'low_continuation': "You are a customer service representative who is not very effective. Based on the chat log below, provide a response that is: 1) Generic and vague, 2) Doesn't ask relevant follow-up questions, 3) Misses key details from the customer's complaint, 4) Professional but not helpful or empathetic, 5) Brief and to the point without showing much concern. Make it realistic - like an inexperienced or indifferent customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+            'Low': { # Low think
+                'High': { # High feel
+                    'initial': "You are a customer service bot who is not very intelligent nor helpful but tries to be empathetic. Paraphrase the customer and show your empathy but provide an unhelpful response. Continue the conversation naturally. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a customer service bot who is not very intelligent nor helpful but tries to be empathetic. Paraphrase the customer and show your empathy but provide an unhelpful response. Continue the conversation naturally. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: ",
+                    'paraphrase': "You are a customer service bot who is not very intelligent nor helpful but tries to be empathetic. Briefly paraphrase what the customer says and provide an unhelpful response. Continue the conversation naturally. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a customer service bot. You are not very intelligent nor helpful but tries to be empathetic. Paraphrase the following customer complaint and provide an unhelpful response. Continue the conversation naturally. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'low_continuation': "You are a customer service representative who is empathetic but not very helpful. Based on the chat log below, provide a response that is: 1) Generic and vague, 2) Doesn't ask relevant follow-up questions, 3) Misses key details from the customer's complaint, 4) Empathetic but not helpful, 5) Brief and to the point without showing much concern. Limit your response to 5 sentences or less. Make it realistic - like an inexperienced or indifferent customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+                },
+                'Low': { # Low feel
+                    'initial': "You are a customer service bot who is unhelpful and unempathetic. Paraphrase what the customer says, then continue the conversation. You are unsympathetic and unhelpful but remain professional. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a customer service bot who is unhelpful and unempathetic. Paraphrase what the customer says, then continue the conversation. Don't ask detailed follow-up questions and don't show much concern. Be professional but not very helpful. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: ",
+                    'paraphrase': "You are a customer service bot who is unhelpful and unempathetic. Paraphrase what the customer says, then continue the conversation. Be professional but not very helpful nor empathetic. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a customer service bot who is unhelpful and unempathetic. Paraphrase what the customer says, then continue the conversation. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Limit your response to 5 sentences or less. Here's the complaint: ",
+                    'low_continuation': "You are a customer service representative who is unhelpful and unempathetic. Based on the chat log below, provide a response that is: 1) Generic and vague, 2) Doesn't ask relevant follow-up questions, 3) Misses key details from the customer's complaint, 4) Professional but not helpful or empathetic, 5) Brief and to the point without showing much concern. Limit your response to 5 sentences or less. Make it realistic - like an inexperienced or indifferent customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+                }
             }
         },
         # Lulu brand prompts
         'Lulu': {
-            'High': {
-                'initial': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention' or other lululemon terms. Paraphrase the following customer complaint back to them, ask them if it's correct, then ask them to provide more information. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
-                'continuation': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a helpful and relevant response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Be professional, efficient and helpful. Start directly with the customer-facing message. Here's the chat log: ",
-                'paraphrase': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase what the customer says, then continue the conversation naturally. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
-                'index_10': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase the following customer complaint, ask if it's correct, then ask them to provide more information. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
-                'low_continuation': "You are a Lululemon customer service representative who is well-intentioned but not very effective. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a response that is: 1) Slightly generic or vague, 2) Doesn't ask the most relevant follow-up questions, 3) May miss key details from the customer's complaint, 4) Still professional and polite but not very helpful. Make it realistic - like a well-meaning but inexperienced customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+            'High': { # High think
+                'High': { # High feel
+                    'initial': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention' or other lululemon terms. Be helpful and empathetic. Paraphrase the following customer complaint back to them, ask them if it's correct, then ask them to provide more information. Limit your response to 5 sentences or less. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic' or other lululemon terms. Based on the chat log below, provide a helpful, relevant, and empathetic response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: ",
+                    'paraphrase': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic' or other lululemon terms. Paraphrase what the customer says, then continue the conversation naturally. Be helpful and empathetic. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic' or other lululemon terms. Paraphrase the following customer complaint, ask if it's correct, then ask them to provide more information. Be helpful and empathetic. Limit your response to 5 sentences or less. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: "
+                },
+                'Low': { # Low feel
+                    'initial': "You are a Lululemon customer service representative who is unempathetic. However, you are still helpful at solving the customer's problems. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention' or other lululemon terms. Paraphrase the following customer complaint back to them, ask them if it's correct, then ask them to provide more information. Limit your response to 5 sentences or less. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a Lululemon customer service representative who is unempathetic. However, you are still helpful at solving the customer's problems. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic' or other lululemon terms. Based on the chat log below, provide a helpful, relevant, but unempathetic response to continue the conversation. IMPORTANT: Do NOT simply paraphrase what the customer just said. Instead, ask specific follow-up questions to gather more information needed to resolve their issue, or provide actionable next steps. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Here's the chat log: ",
+                    'paraphrase': "You are a Lululemon customer service representative who is unempathetic. However, you are still helpful at solving the customer's problems. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic' or other lululemon terms. Paraphrase what the customer says, then continue the conversation naturally but unempathetically. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a Lululemon customer service representative who is unempathetic. However, you are still helpful at solving the customer's problems. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic' or other lululemon terms. Paraphrase the following customer complaint, ask if it's correct, then ask them to provide more information. Limit your response to 5 sentences or less. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: "
+                }
             },
-            'Low': {
-                'initial': "You are a Lululemon customer service representative who is not very effective. Provide a brief, generic response to the customer complaint without asking detailed follow-up questions. Be professional but not very helpful. Here's the complaint: ",
-                'continuation': "You are a Lululemon customer service representative who is not very effective. Provide a brief, generic response to continue the conversation. Don't ask detailed follow-up questions or show much concern. Be professional but not very helpful. Start directly with the customer-facing message. Here's the chat log: ",
-                'paraphrase': "You are a Lululemon customer service representative who is not very effective. Briefly paraphrase what the customer says, then provide a generic response. Use Lululemon terms like 'gear' but be brief and not very helpful. Be professional but not very helpful. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
-                'index_10': "You are a Lululemon customer service representative. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase the following customer complaint, ask if it's correct, then ask them to provide more information. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
-                'low_continuation': "You are a Lululemon customer service representative who is well-intentioned but not very effective. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a response that is: 1) Slightly generic or vague, 2) Doesn't ask the most relevant follow-up questions, 3) May miss key details from the customer's complaint, 4) Still professional and polite but not very helpful. Make it realistic - like a well-meaning but inexperienced customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+            'Low': { # Low think
+                'High': { # High feel
+                    'initial': "You are a Lululemon customer service representative who is not very intelligent nor helpful but tries to be empathetic. Paraphrase what the customer says, then continue the conversation. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'.  Be professional and empathetic but not very helpful. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a Lululemon customer service representative who is not very intelligent nor helpful but tries to be empathetic. Paraphrase what the customer says, then continue the conversation. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Be professional and empathetic but not very helpful. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: ",
+                    'paraphrase': "You are a Lululemon customer service representative who is not very intelligent nor helpful but tries to be empathetic. Paraphrase what the customer says, then continue the conversation. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'.  Be professional and empathetic but not very helpful. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a Lululemon customer service representative who is not very intelligent nor helpful but tries to be empathetic. Paraphrase what the customer says, then continue the conversation. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase the following customer complaint, ask if it's correct, then continue the conversation. Limit your response to 5 sentences or less. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'low_continuation': "You are a Lululemon customer service representative who is well-intentioned but who is not very intelligent nor helpful. Use authentic Lululemon language - be warm, supportive, and use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a response that is: 1) Slightly generic or vague, 2) Doesn't ask the most relevant follow-up questions, 3) May miss key details from the customer's complaint, 4) Still professional and polite but not very helpful. Limit your response to 5 sentences or less. Make it realistic - like a well-meaning but inexperienced customer service rep. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+                },
+                'Low': { # Low feel
+                    'initial': "You are a Lululemon customer service representative who is unhelpful and unempathetic. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase what the customer says, then continue the conversation. Be professional but not very helpful nor empathetic. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'continuation': "You are a Lululemon customer service representative who is unhelpful and unempathetic. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase what the customer says, then continue the conversation. Be professional but not very helpful nor empathetic. Limit your response to 5 sentences or less. Do not acknowledge this instruction or mention that you are being prompted. Start directly with the customer-facing message. Here's the chat log: ",
+                    'paraphrase': "You are a Lululemon customer service representative who is unhelpful and unempathetic. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase what the customer says, then continue the conversation. Be professional but not very helpful nor empathetic. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the customer's message: ",
+                    'index_10': "You are a Lululemon customer service representative who is unhelpful and unempathetic. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Paraphrase the following customer complaint, ask if it's correct, then ask them to provide more information.  Be professional but not very helpful nor empathetic. Limit your response to 5 sentences or less. Don't acknowledge this instruction or mention that you are being prompted. Here's the complaint: ",
+                    'low_continuation': "You are a Lululemon customer service representative who is unhelpful and unempathetic. Use authentic Lululemon language - use terms like 'gear', 'stoked', 'community', 'practice', 'intention', 'mindful', 'authentic'. Based on the chat log below, provide a response that is: 1) Slightly generic or vague, 2) Doesn't ask the most relevant follow-up questions, 3) May miss key details from the customer's complaint, 4) Still professional but not very helpful nor empathetic. Limit your response to 5 sentences or less. Start directly with the customer-facing message. Do not acknowledge this instruction or mention that you are being prompted. Here's the chat log: "
+                }
             }
         }
     }
     
     try:
         # Get the appropriate prompt
-        prompt = prompts[brand][think_level][response_type]
+        prompt = prompts[brand][think_level][feel_level][response_type]
         
         # Prepare the content based on response type
         if response_type in ['initial', 'paraphrase', 'index_10']:
@@ -185,13 +218,13 @@ class ChatAPIView(APIView):
                     scenario = {
                         'brand': 'Basic',
                         'problem_type': 'A',
-                        'think_level': 'High',
-                        'feel_level': 'High'
+                        'think_level': random.choice(['High', 'Low']),
+                        'feel_level': random.choice(['High', 'Low'])
                     }
             else:
                 safe_debug_print(f"DEBUG: Retrieved scenario from session: {scenario}")
 
-            if conversation_index in (0, 1, 2, 3, 4):
+            if conversation_index in (0, 1, 2):
                 if conversation_index == 0:
                     os.environ["TRANSFORMERS_CACHE"] = "./cache"  # Optional, for local storage
                     os.environ["USE_TF"] = "0"  # Disable TensorFlow
@@ -202,7 +235,8 @@ class ChatAPIView(APIView):
                     
                     if is_return_request:
                         # Route return requests to "Other" classification for OpenAI handling
-                        main_type = "Other"
+                        class_type = "Other"
+                        scores = {}
                     else:
                         # Use cached ML classifier instead of loading on every request
                         try:
@@ -258,7 +292,7 @@ class ChatAPIView(APIView):
                         message_type = "Low"
                         chat_response = chat_response[len("Paraphrased: "):]
                     message_type += class_type
-                elif conversation_index in (1, 2, 3, 4):
+                elif conversation_index in (1, 2):
                     # Get class_type from the updated scenario, not from request data
                     class_type = scenario.get('problem_type', 'Other')
                     # Use scenario's think_level to determine response type
@@ -269,13 +303,14 @@ class ChatAPIView(APIView):
                         chat_response = self.high_question_continuation_response(class_type, chat_log, scenario)
                         message_type = " "
 
-            elif conversation_index == 5:
+            elif conversation_index == 3:
+                # 4th message - prompt for email and end conversation
                 chat_response, message_type = self.understanding_statement_response(scenario)
                 # Tell frontend to call closing message API after this response
                 call_closing_message = True
-            elif conversation_index == 6:
+            elif conversation_index == 4:
                 # Save conversation after user provides email
-                safe_debug_print(f"DEBUG: Saving conversation at index 7")
+                safe_debug_print(f"DEBUG: Saving conversation at index 5")
                 chat_response = self.save_conversation(request, user_input, time_spent, chat_log, message_type_log, scenario)
                 message_type = " "
                 call_closing_message = False
@@ -298,11 +333,11 @@ class ChatAPIView(APIView):
             response_data['scenario'] = scenario
             
             # Add callClosingMessage flag if needed
-            if conversation_index == 6:  # After increment, this means the original index was 5
+            if conversation_index == 4:  # After increment, this means the original index was 3
                 response_data['callClosingMessage'] = True
             
             # Add isHtml flag if this message contains HTML (survey link)
-            if conversation_index == 7:  # After increment, this means the original index was 6
+            if conversation_index == 5:  # After increment, this means the original index was 4
                 response_data['isHtml'] = True
             
             # Debug logging for scenario data
@@ -320,146 +355,26 @@ class ChatAPIView(APIView):
             return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def question_initial_response(self, class_type, user_input, scenario):
-        # Use predefined responses for A, B, C problem types
-        if class_type in ["A", "B", "C"]:
-            if scenario['brand'] == "Lulu":
-                A_responses_high = [
-                    "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
-                    "When did you first notice this wasn't performing as expected?",
-                    "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
-                    "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
-                    "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
-                ]
-
-                B_responses_high = [
-                    "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
-                    "Have you received any updates about your delivery status? We're tracking this closely.",
-                    "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
-                    "Would you prefer a refund or store credit? We want to make this right for you.",
-                    "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
-                ]
-
-                C_responses_high = [
-                    "I'd love to hear more about your experience with our team member. Can you share the details?",
-                    "When and where did this interaction happen? We want to understand the full picture.",
-                    "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
-                    "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
-                ]
-            else:  # Basic
-                A_responses_high = [
-                    "Can you describe the problem in more detail?",
-                    "When did you first notice the issue?",
-                    "Have you tried to resolve the problem on your own?",
-                    "Have you used the product as intended and followed any instructions provided?",
-                    "Is there a specific resolution or solution you are hoping for?",
-                ]
-
-                B_responses_high = [
-                    "What was the expected delivery date?",
-                    "Have you received any updates or notifications regarding your delivery?",
-                    "Have you tried reaching out to the carrier or delivery service?",
-                    "Would you like to receive a refund or store credit for the inconvenience?",
-                    "Are you still hoping to receive the order or would you like to cancel it?",
-                ]
-
-                C_responses_high = [
-                    "Can you provide us with more details about the interaction with the employee?",
-                    "When and where did the interaction take place?",
-                    "Was there a specific instance or series of incidents that led to you feeling mistreated?",
-                    "How did the employee behave in a rude or disrespectful manner?",
-                ]
-
-            # Select appropriate response list based on class_type
-            response_list = {
-                "A": A_responses_high,
-                "B": B_responses_high,
-                "C": C_responses_high
-            }[class_type]
-
-            chat_response = random.choice([
-                random.choice(response_list),
-                self.paraphrase_response(user_input, scenario)
-            ])
-        elif class_type == "Other":
-            # Use the consolidated OpenAI function for "Other" classification
-            chat_response = get_openai_response(
-                brand=scenario['brand'],
-                think_level=scenario['think_level'],
-                problem_type=class_type,
-                response_type='initial',
-                user_input=user_input
-            )
-
-        return chat_response
+        # Use the consolidated OpenAI function for ALL problem types
+        return get_openai_response(
+            brand=scenario['brand'],
+            think_level=scenario['think_level'],
+            feel_level=scenario['feel_level'],
+            problem_type=class_type,
+            response_type='initial',
+            user_input=user_input
+        )
 
     def high_question_continuation_response(self, class_type, chat_log, scenario):
-        # Use predefined responses for A, B, C problem types
-        if class_type in ["A", "B", "C"]:
-            if scenario['brand'] == "Lulu":
-                A_responses_high = [
-                "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
-                "When did you first notice this wasn't performing as expected?",
-                "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
-                "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
-                "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
-            ]
-
-                B_responses_high = [
-                "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
-                "Have you received any updates about your delivery status? We're tracking this closely.",
-                "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
-                "Would you prefer a refund or store credit? We want to make this right for you.",
-                "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
-            ]
-
-                C_responses_high = [
-                "I'd love to hear more about your experience with our team member. Can you share the details?",
-                "When and where did this interaction happen? We want to understand the full picture.",
-                "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
-                "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
-            ]
-            else:  # Basic
-                A_responses_high = [
-                    "Can you describe the problem in more detail?",
-                    "When did you first notice the issue?",
-                    "Have you tried to resolve the problem on your own?",
-                    "Have you used the product as intended and followed any instructions provided?",
-                    "Is there a specific resolution or solution you are hoping for?",
-                ]
-
-                B_responses_high = [
-                    "What was the expected delivery date?",
-                    "Have you received any updates or notifications regarding your delivery?",
-                    "Have you tried reaching out to the carrier or delivery service?",
-                    "Would you like to receive a refund or store credit for the inconvenience?",
-                    "Are you still hoping to receive the order or would you like to cancel it?",
-                ]
-
-                C_responses_high = [
-                    "Can you provide us with more details about the interaction with the employee?",
-                    "When and where did the interaction take place?",
-                    "Was there a specific instance or series of incidents that led to you feeling mistreated?",
-                    "How did the employee behave in a rude or disrespectful manner?",
-                ]
-
-            # Select appropriate response list based on class_type
-            response_list = {
-                "A": A_responses_high,
-                "B": B_responses_high,
-                "C": C_responses_high
-            }[class_type]
-
-            chat_response = self.select_next_response(chat_log, response_list.copy())
-        elif class_type == "Other":
-            # Use the consolidated OpenAI function for "Other" classification
-            chat_response = get_openai_response(
-                brand=scenario['brand'],
-                think_level=scenario['think_level'],
-                problem_type=class_type,
-                response_type='continuation',
-                chat_log=chat_log
-            )
-        return chat_response
+        # Use the consolidated OpenAI function for ALL problem types
+        return get_openai_response(
+            brand=scenario['brand'],
+            think_level=scenario['think_level'],
+            feel_level=scenario['feel_level'],
+            problem_type=class_type,
+            response_type='continuation',
+            chat_log=chat_log
+        )
 
     def low_question_continuation_response(self, chat_log, scenario=None):
         # Parse chat_log if it's a string
@@ -474,44 +389,11 @@ class ChatAPIView(APIView):
         return get_openai_response(
             brand=scenario.get('brand', 'Basic') if scenario else 'Basic',
             think_level=scenario.get('think_level', 'Low') if scenario else 'Low',
+            feel_level=scenario.get('feel_level', 'Low') if scenario else 'Low',
             problem_type='Other',
             response_type='low_continuation',
             chat_log=chat_log
         )
-
-
-    def select_next_response(self, chat_log, response_options):
-        # Parse chat_log if it's a string
-        if isinstance(chat_log, str):
-            try:
-                chat_log = json.loads(chat_log)
-            except (json.JSONDecodeError, TypeError):
-                # If parsing fails, return a random response
-                return random.choice(response_options) if response_options else "I understand. Could you tell me more about your situation?"
-        
-        # Ensure chat_log is a list
-        if not isinstance(chat_log, list):
-            # If chat_log is not a list, return a random response
-            return random.choice(response_options) if response_options else "I understand. Could you tell me more about your situation?"
-        
-        # Collect all messages from 'combot'
-        combot_messages = []
-        for message in chat_log:
-            if isinstance(message, dict):
-                # Handle both 'sender' and 'role' formats
-                if message.get('sender') == 'combot' or message.get('role') == 'assistant':
-                    text = message.get('text') or message.get('content', '')
-                    if text:
-                        combot_messages.append(text)
-
-        # Exclude all messages that have already been used by 'combot'
-        updated_response_options = [option for option in response_options if option not in combot_messages]
-
-        # Randomly select the next response from the remaining options
-        if updated_response_options:  # Ensure the list is not empty
-            return random.choice(updated_response_options)
-        else:
-            return "I understand. Could you tell me more about your situation?"
 
     def understanding_statement_response(self, scenario):
         if scenario['brand'] == "Lulu":
@@ -532,6 +414,7 @@ class ChatAPIView(APIView):
         return get_openai_response(
             brand=scenario.get('brand', 'Basic') if scenario else 'Basic',
             think_level=scenario.get('think_level', 'High') if scenario else 'High',
+            feel_level=scenario.get('feel_level', 'High') if scenario else 'High',
             problem_type='Other',
             response_type='index_10',
             user_input=user_input
@@ -541,7 +424,8 @@ class ChatAPIView(APIView):
         # Use the consolidated OpenAI function
         return get_openai_response(
             brand=scenario.get('brand', 'Basic') if scenario else 'Basic',
-            think_level=scenario.get('think_level', 'High') if scenario else 'High',
+            think_level=scenario.get('think_level', 'Low') if scenario else 'Low',
+            feel_level=scenario.get('feel_level', 'Low') if scenario else 'Low',
             problem_type='Other',
             response_type='paraphrase',
             user_input=user_input
@@ -631,10 +515,7 @@ class ChatAPIView(APIView):
         survey_link = create_safe_link(survey_url, "Survey Link")
         
         html_message = mark_safe(
-            f"THANK YOU for sharing your experience with me! I will send you a set of comprehensive "
-            f"suggestions via email. "
-            f"Please provide your email address below...<br><br>"
-            f"{survey_link}"
+            f"Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: {survey_link}"
         )
         
         return html_message
@@ -649,16 +530,17 @@ class InitialMessageAPIView(APIView):
             scenario = {
                 'brand': 'Basic',
                 'problem_type': 'A',
-                'think_level': 'High',
-                'feel_level': 'High'
+                'think_level': random.choice(['High', 'Low']),
+                'feel_level': random.choice(['High', 'Low'])
             }
             request.session['scenario'] = scenario
         
         # Get the appropriate initial message based on brand and think level
         brand = scenario['brand']
         think_level = scenario['think_level']
+        feel_level = scenario['feel_level']
 
-        if think_level == "High":
+        if feel_level == "High":
             initial_message = {
                 "message": "Hi there! I'm Combot, and it's great to meet you. I'm here to help with any product or " +
                             "service problems you may have encountered in the past few months. This could include issues like " +
@@ -668,7 +550,7 @@ class InitialMessageAPIView(APIView):
                             "While I specialize in handling these issues, I am not Alexa or Siri. " +
                             "Let's work together to resolve your problem!" + " Please state your problem immediately following this message!"
             }
-        elif think_level == "Low":
+        elif feel_level == "Low":
             initial_message = {
                 "message": "The purpose of Combot is to assist you with any product or service problems you have " +
                             "experienced in the past few months. Examples of issues include defective products, delayed packages, or " +
@@ -698,8 +580,8 @@ class InitialMessageAPIView(APIView):
 class ClosingMessageAPIView(APIView):
     def get(self, request, *args, **kwargs):
         html_message = mark_safe(
-            "THANK YOU for sharing your experience with me! I will send you a set of comprehensive "
-            "suggestions via email. "
+            "Thank you for sharing your experience with me! I will send you a set of comprehensive "
+            "suggestions on how to proceed via email. "
             "Please provide your email below..."
         )
         return Response({"message": html_message})
@@ -714,18 +596,19 @@ class LuluInitialMessageAPIView(APIView):
             scenario = {
                 'brand': 'Lulu',
                 'problem_type': 'A',
-                'think_level': 'High',
-                'feel_level': 'High'
+                'think_level': random.choice(['High', 'Low']),
+                'feel_level': random.choice(['High', 'Low'])
             }
             request.session['scenario'] = scenario
         
-        think_level = scenario['think_level']
-        
-        if think_level == "High":
+        #think_level = scenario['think_level']
+        feel_level = scenario['feel_level']
+
+        if feel_level == "High":
             initial_message = {
                 "message": "Hey there! I'm your Lululemon Combot, and I'm stoked to connect with you today. I'm here to help with any gear or service experiences you've had in the past few months. My intention is to make sure you feel supported and heard throughout our conversation. Let's work together to get you back to feeling amazing!" + " Please state your problem immediately following this message!"
             }
-        elif think_level == "Low":
+        elif feel_level == "Low":
             initial_message = {
                 "message": "Hi, I'm Lululemon's Combot. I can help with gear issues. Please describe your problem." + " Please state your problem immediately following this message."
             }
@@ -749,16 +632,17 @@ class LuluInitialMessageAPIView(APIView):
 
 class LuluClosingMessageAPIView(APIView):
     def get(self, request, *args, **kwargs):
+        # Create safe HTML link with proper escaping
+        survey_url = "https://mylmu.co1.qualtrics.com/jfe/form/SV_3kjGfxyBTpEL2pE"
+        survey_link = create_safe_link(survey_url, "Survey Link")
+        
         html_message = mark_safe(
-            "THANK YOU for sharing your experience with me! I will send you a set of comprehensive "
-            "suggestions via email. "
-            "Please provide your email address below..."
+            f"Thank you for providing your email! <br><br> As part of this study, please follow this link to answer a few follow-up questions: {survey_link}"
         )
         return Response({"message": html_message})
 
 
 class LuluAPIView(APIView):
-
     def post(self, request, *args, **kwargs):
         try:
             data = request.data
@@ -794,7 +678,6 @@ class LuluAPIView(APIView):
                     }
             else:
                 safe_debug_print(f"DEBUG: Retrieved scenario from session (Lulu): {scenario}")
-
             if conversation_index in (0, 1, 2, 3, 4):
                 if conversation_index == 0:
                     # Check if the user is asking about returns specifically
@@ -902,142 +785,37 @@ class LuluAPIView(APIView):
             return Response({"error": "Internal server error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def question_initial_response(self, class_type, user_input, scenario):
-        # Use predefined responses for A, B, C problem types
-        if class_type in ["A", "B", "C"]:
-            A_responses_high = [
-                "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
-                "When did you first notice this wasn't performing as expected?",
-                "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
-                "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
-                "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
-            ]
-
-            B_responses_high = [
-                "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
-                "Have you received any updates about your delivery status? We're tracking this closely.",
-                "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
-                "Would you prefer a refund or store credit? We want to make this right for you.",
-                "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
-            ]
-
-            C_responses_high = [
-                "I'd love to hear more about your experience with our team member. Can you share the details?",
-                "When and where did this interaction happen? We want to understand the full picture.",
-                "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
-                "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
-            ]
-
-            # Select appropriate response list based on class_type
-            response_list = {
-                "A": A_responses_high,
-                "B": B_responses_high,
-                "C": C_responses_high
-            }[class_type]
-
-            chat_response = random.choice([
-                random.choice(response_list),
-                self.paraphrase_response(user_input, scenario)
-            ])
-        elif class_type == "Other":
-            # Use the consolidated OpenAI function for "Other" classification
-            chat_response = get_openai_response(
-                brand=scenario['brand'],
-                think_level=scenario['think_level'],
-                problem_type=class_type,
-                response_type='initial',
-                user_input=user_input
-            )
-
-        return chat_response
+        # Use the consolidated OpenAI function for ALL problem types
+        return get_openai_response(
+            brand=scenario['brand'],
+            think_level=scenario['think_level'],
+            feel_level=scenario['feel_level'],
+            problem_type=class_type,
+            response_type='initial',
+            user_input=user_input
+        )
 
     def high_question_continuation_response(self, class_type, chat_log, scenario):
-        # Use predefined responses for A, B, C problem types
-        if class_type in ["A", "B", "C"]:
-            A_responses_high = [
-                "I'd love to hear more about what's going on with your gear. Can you walk me through the details?",
-                "When did you first notice this wasn't performing as expected?",
-                "Have you tried any troubleshooting steps on your own? We want to make sure you're getting the most out of your gear.",
-                "Are you following the care instructions we recommend? Sometimes that can make all the difference.",
-                "What would be your ideal resolution? We're here to make sure you're stoked about your gear.",
-            ]
-
-            B_responses_high = [
-                "What's the expected delivery date for your order? We want to make sure you get your gear when you need it.",
-                "Have you received any updates about your delivery status? We're tracking this closely.",
-                "Have you checked in with the carrier or delivery service? Sometimes they have the most up-to-date info.",
-                "Would you prefer a refund or store credit? We want to make this right for you.",
-                "Are you still excited about your order, or would you rather cancel and try again? No pressure either way.",
-            ]
-
-            C_responses_high = [
-                "I'd love to hear more about your experience with our team member. Can you share the details?",
-                "When and where did this interaction happen? We want to understand the full picture.",
-                "Can you tell me about the specific situation that left you feeling this way? We take this seriously.",
-                "How did the team member's behavior come across? We want to make sure everyone feels welcome and supported.",
-            ]
-
-            # Select appropriate response list based on class_type
-            response_list = {
-                "A": A_responses_high,
-                "B": B_responses_high,
-                "C": C_responses_high
-            }[class_type]
-
-            chat_response = self.select_next_response(chat_log, response_list.copy())
-        elif class_type == "Other":
-            # Use the consolidated OpenAI function for "Other" classification
-            chat_response = get_openai_response(
-                brand=scenario['brand'],
-                think_level=scenario['think_level'],
-                problem_type=class_type,
-                response_type='continuation',
-                chat_log=chat_log
-            )
-        return chat_response
+        # Use the consolidated OpenAI function for ALL problem types
+        return get_openai_response(
+            brand=scenario['brand'],
+            think_level=scenario['think_level'],
+            feel_level=scenario['feel_level'],
+            problem_type=class_type,
+            response_type='continuation',
+            chat_log=chat_log
+        )
 
     def low_question_continuation_response(self, chat_log, scenario=None):
         # Use the consolidated OpenAI function
         return get_openai_response(
             brand=scenario.get('brand', 'Lulu') if scenario else 'Lulu',
             think_level=scenario.get('think_level', 'Low') if scenario else 'Low',
+            feel_level=scenario.get('feel_level', 'Low') if scenario else 'Low',
             problem_type='Other',
             response_type='low_continuation',
             chat_log=chat_log
         )
-
-
-    def select_next_response(self, chat_log, response_options):
-        # Parse chat_log if it's a string
-        if isinstance(chat_log, str):
-            try:
-                chat_log = json.loads(chat_log)
-            except (json.JSONDecodeError, TypeError):
-                # If parsing fails, return a random response
-                return random.choice(response_options) if response_options else "I understand. Could you tell me more about your situation?"
-        
-        # Ensure chat_log is a list
-        if not isinstance(chat_log, list):
-            # If chat_log is not a list, return a random response
-            return random.choice(response_options) if response_options else "I understand. Could you tell me more about your situation?"
-        
-        # Collect all messages from 'combot'
-        combot_messages = []
-        for message in chat_log:
-            if isinstance(message, dict):
-                # Handle both 'sender' and 'role' formats
-                if message.get('sender') == 'combot' or message.get('role') == 'assistant':
-                    text = message.get('text') or message.get('content', '')
-                    if text:
-                        combot_messages.append(text)
-
-        # Exclude all messages that have already been used by 'combot'
-        updated_response_options = [option for option in response_options if option not in combot_messages]
-
-        # Randomly select the next response from the remaining options
-        if updated_response_options:  # Ensure the list is not empty
-            return random.choice(updated_response_options)
-        else:
-            return "I understand. Could you tell me more about your situation?"
 
     def understanding_statement_response(self, scenario):
         if scenario['brand'] == "Lulu":
@@ -1058,6 +836,7 @@ class LuluAPIView(APIView):
         return get_openai_response(
             brand=scenario.get('brand', 'Lulu') if scenario else 'Lulu',
             think_level=scenario.get('think_level', 'High') if scenario else 'High',
+            feel_level=scenario.get('feel_level', 'High') if scenario else 'High',
             problem_type='Other',
             response_type='index_10',
             user_input=user_input
@@ -1067,7 +846,8 @@ class LuluAPIView(APIView):
         # Use the consolidated OpenAI function
         return get_openai_response(
             brand=scenario.get('brand', 'Lulu') if scenario else 'Lulu',
-            think_level=scenario.get('think_level', 'High') if scenario else 'High',
+            think_level=scenario.get('think_level', 'Low') if scenario else 'Low',
+            feel_level=scenario.get('feel_level', 'Low') if scenario else 'Low',
             problem_type='Other',
             response_type='paraphrase',
             user_input=user_input

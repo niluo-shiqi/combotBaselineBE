@@ -615,14 +615,7 @@ class ChatAPIView(APIView):
             safe_debug_print(f"DEBUG: About to save conversation to database...")
             conversation.save()
             safe_debug_print(f"DEBUG: Conversation saved to database with ID: {conversation.id}")
-            
-            # Manually trigger the Google Sheets export
-            try:
-                from .signals import export_to_google_sheets
-                export_to_google_sheets(Conversation, conversation, True)
-                safe_debug_print(f"DEBUG: Manually triggered Google Sheets export for conversation {conversation.id}")
-            except Exception as export_error:
-                safe_debug_print(f"ERROR: Failed to export to Google Sheets: {export_error}")
+            safe_debug_print(f"DEBUG: Google Sheets export will be triggered automatically by signal")
         except Exception as e:
             safe_debug_print(f"ERROR: Failed to save conversation: {e}")
             safe_debug_print(f"ERROR: email={email}, time_spent={time_spent}, chat_log type={type(chat_log)}")

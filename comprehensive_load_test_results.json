@@ -1,0 +1,236 @@
+[
+  {
+    "total_sessions": 12,
+    "successful_sessions": 12,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 1.5404369115829468,
+    "median_response_time": 1.4543288946151733,
+    "min_response_time": 0.17715811729431152,
+    "max_response_time": 5.6402428150177,
+    "total_test_time": 24.690022230148315,
+    "sessions_per_second": 0.48602629386648044,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1806,
+      "usage_percent": 23.121239277941363
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1804,
+      "usage_percent": 23.095634361797465
+    },
+    "memory_increase_mb": -2,
+    "memory_increase_percent": -0.025604916143898038,
+    "concurrent_users": 4,
+    "sessions_per_user": 3
+  },
+  {
+    "total_sessions": 24,
+    "successful_sessions": 24,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 2.9032235662142436,
+    "median_response_time": 2.6779685020446777,
+    "min_response_time": 0.16685175895690918,
+    "max_response_time": 7.206274032592773,
+    "total_test_time": 45.200562953948975,
+    "sessions_per_second": 0.530966838277027,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 2062,
+      "usage_percent": 26.398668544360515
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1799,
+      "usage_percent": 23.031622071437717
+    },
+    "memory_increase_mb": -263,
+    "memory_increase_percent": -3.367046472922798,
+    "concurrent_users": 8,
+    "sessions_per_user": 3
+  },
+  {
+    "total_sessions": 36,
+    "successful_sessions": 36,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 4.4831134902106395,
+    "median_response_time": 4.357396960258484,
+    "min_response_time": 0.16518497467041016,
+    "max_response_time": 11.35902214050293,
+    "total_test_time": 71.22023177146912,
+    "sessions_per_second": 0.505474344923736,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1796,
+      "usage_percent": 22.993214697221866
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1796,
+      "usage_percent": 22.993214697221866
+    },
+    "memory_increase_mb": 0,
+    "memory_increase_percent": 0.0,
+    "concurrent_users": 12,
+    "sessions_per_user": 3
+  },
+  {
+    "total_sessions": 48,
+    "successful_sessions": 48,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 5.7467141081889475,
+    "median_response_time": 5.365678071975708,
+    "min_response_time": 0.16752910614013672,
+    "max_response_time": 14.561308860778809,
+    "total_test_time": 90.58740520477295,
+    "sessions_per_second": 0.5298749852862651,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1796,
+      "usage_percent": 22.993214697221866
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1470,
+      "usage_percent": 18.819613365766227
+    },
+    "memory_increase_mb": -326,
+    "memory_increase_percent": -4.1736013314556395,
+    "concurrent_users": 16,
+    "sessions_per_user": 3
+  },
+  {
+    "total_sessions": 60,
+    "successful_sessions": 60,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 7.597296459674835,
+    "median_response_time": 7.010395050048828,
+    "min_response_time": 0.16967296600341797,
+    "max_response_time": 18.87610697746277,
+    "total_test_time": 117.89349794387817,
+    "sessions_per_second": 0.5089339195666439,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1434,
+      "usage_percent": 18.358724875176033
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1269,
+      "usage_percent": 16.246319293304314
+    },
+    "memory_increase_mb": -165,
+    "memory_increase_percent": -2.1124055818717196,
+    "concurrent_users": 20,
+    "sessions_per_user": 3
+  },
+  {
+    "total_sessions": 50,
+    "successful_sessions": 37,
+    "failed_sessions": 13,
+    "success_rate": 74.0,
+    "avg_response_time": 11.039163160324097,
+    "median_response_time": 11.195024251937866,
+    "min_response_time": 0.16978216171264648,
+    "max_response_time": 29.284969806671143,
+    "total_test_time": 110.53318095207214,
+    "sessions_per_second": 0.45235285521802093,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1272,
+      "usage_percent": 16.284726667520165
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1603,
+      "usage_percent": 20.522340289335553
+    },
+    "memory_increase_mb": 331,
+    "memory_increase_percent": 4.237613621815388,
+    "concurrent_users": 25,
+    "sessions_per_user": 2
+  },
+  {
+    "total_sessions": 60,
+    "successful_sessions": 60,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 11.25549736181895,
+    "median_response_time": 10.08464503288269,
+    "min_response_time": 0.16772198677062988,
+    "max_response_time": 28.649055242538452,
+    "total_test_time": 114.63033699989319,
+    "sessions_per_second": 0.5234216488437603,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1598,
+      "usage_percent": 20.458327998975804
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1771,
+      "usage_percent": 22.673153245423123
+    },
+    "memory_increase_mb": 173,
+    "memory_increase_percent": 2.214825246447319,
+    "concurrent_users": 30,
+    "sessions_per_user": 2
+  },
+  {
+    "total_sessions": 70,
+    "successful_sessions": 68,
+    "failed_sessions": 2,
+    "success_rate": 97.14285714285714,
+    "avg_response_time": 13.246805265370536,
+    "median_response_time": 10.974662899971008,
+    "min_response_time": 0.17200398445129395,
+    "max_response_time": 29.93120813369751,
+    "total_test_time": 132.6394329071045,
+    "sessions_per_second": 0.5277465265478425,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1733,
+      "usage_percent": 22.186659838689028
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1739,
+      "usage_percent": 22.263474587120726
+    },
+    "memory_increase_mb": 6,
+    "memory_increase_percent": 0.07681474843169767,
+    "concurrent_users": 35,
+    "sessions_per_user": 2
+  },
+  {
+    "total_sessions": 40,
+    "successful_sessions": 6,
+    "failed_sessions": 34,
+    "success_rate": 15.0,
+    "avg_response_time": 11.594255169232687,
+    "median_response_time": 2.0872703790664673,
+    "min_response_time": 0.16728806495666504,
+    "max_response_time": 30.087785959243774,
+    "total_test_time": 58.303937911987305,
+    "sessions_per_second": 0.6860600061076834,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1735,
+      "usage_percent": 22.212264754832926
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1763,
+      "usage_percent": 22.570733580847524
+    },
+    "memory_increase_mb": 28,
+    "memory_increase_percent": 0.3584688260145974,
+    "concurrent_users": 40,
+    "sessions_per_user": 1
+  }
+]

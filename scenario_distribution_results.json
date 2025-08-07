@@ -1,0 +1,286 @@
+{
+  "comparison": {
+    "analysis_15": {
+      "sessions": 100,
+      "expected_per_scenario": 1.875,
+      "scenario_analysis": {
+        "Nike-A-Low-Low": {
+          "mean_count": 1.99,
+          "std_count": 1.3303758867327684,
+          "min_count": 0,
+          "max_count": 6,
+          "coefficient_of_variation": 0.6685305963481248,
+          "coverage_rate": 0.89,
+          "expected_count": 1.875
+        },
+        "Nike-A-Low-High": {
+          "mean_count": 1.73,
+          "std_count": 1.3553966209195005,
+          "min_count": 0,
+          "max_count": 5,
+          "coefficient_of_variation": 0.7834662548667634,
+          "coverage_rate": 0.77,
+          "expected_count": 1.875
+        },
+        "Nike-A-High-Low": {
+          "mean_count": 1.91,
+          "std_count": 1.2656618821786487,
+          "min_count": 0,
+          "max_count": 7,
+          "coefficient_of_variation": 0.6626502000935334,
+          "coverage_rate": 0.87,
+          "expected_count": 1.875
+        },
+        "Nike-A-High-High": {
+          "mean_count": 2.05,
+          "std_count": 1.2678722333105965,
+          "min_count": 0,
+          "max_count": 7,
+          "coefficient_of_variation": 0.6184742601515105,
+          "coverage_rate": 0.88,
+          "expected_count": 1.875
+        },
+        "Lulu-B-Low-Low": {
+          "mean_count": 1.8,
+          "std_count": 1.2,
+          "min_count": 0,
+          "max_count": 6,
+          "coefficient_of_variation": 0.6666666666666666,
+          "coverage_rate": 0.87,
+          "expected_count": 1.875
+        },
+        "Lulu-B-Low-High": {
+          "mean_count": 1.83,
+          "std_count": 1.0775435026020992,
+          "min_count": 0,
+          "max_count": 5,
+          "coefficient_of_variation": 0.5888215861213657,
+          "coverage_rate": 0.91,
+          "expected_count": 1.875
+        },
+        "Lulu-B-High-Low": {
+          "mean_count": 1.86,
+          "std_count": 1.2167168939404105,
+          "min_count": 0,
+          "max_count": 5,
+          "coefficient_of_variation": 0.6541488677098981,
+          "coverage_rate": 0.87,
+          "expected_count": 1.875
+        },
+        "Lulu-B-High-High": {
+          "mean_count": 1.83,
+          "std_count": 1.1920989891783316,
+          "min_count": 0,
+          "max_count": 6,
+          "coefficient_of_variation": 0.6514202126657549,
+          "coverage_rate": 0.89,
+          "expected_count": 1.875
+        }
+      },
+      "overall_stats": {
+        "mean_total_users": 15.0,
+        "std_total_users": 0.0,
+        "min_total_users": 15,
+        "max_total_users": 15,
+        "target_users": 15.0
+      }
+    },
+    "analysis_30": {
+      "sessions": 100,
+      "expected_per_scenario": 3.75,
+      "scenario_analysis": {
+        "Nike-A-Low-Low": {
+          "mean_count": 3.88,
+          "std_count": 1.6569852141766384,
+          "min_count": 0,
+          "max_count": 8,
+          "coefficient_of_variation": 0.42705804489088617,
+          "coverage_rate": 0.98,
+          "expected_count": 3.75
+        },
+        "Nike-A-Low-High": {
+          "mean_count": 3.84,
+          "std_count": 1.901157542130583,
+          "min_count": 0,
+          "max_count": 7,
+          "coefficient_of_variation": 0.49509310992983935,
+          "coverage_rate": 0.96,
+          "expected_count": 3.75
+        },
+        "Nike-A-High-Low": {
+          "mean_count": 3.79,
+          "std_count": 1.7046700560519037,
+          "min_count": 0,
+          "max_count": 8,
+          "coefficient_of_variation": 0.4497810174279429,
+          "coverage_rate": 0.99,
+          "expected_count": 3.75
+        },
+        "Nike-A-High-High": {
+          "mean_count": 3.77,
+          "std_count": 1.8539417466576453,
+          "min_count": 0,
+          "max_count": 9,
+          "coefficient_of_variation": 0.49176173651396426,
+          "coverage_rate": 0.99,
+          "expected_count": 3.75
+        },
+        "Lulu-B-Low-Low": {
+          "mean_count": 3.53,
+          "std_count": 1.664061296947922,
+          "min_count": 0,
+          "max_count": 8,
+          "coefficient_of_variation": 0.471405466557485,
+          "coverage_rate": 0.99,
+          "expected_count": 3.75
+        },
+        "Lulu-B-Low-High": {
+          "mean_count": 3.7,
+          "std_count": 1.5652475842498528,
+          "min_count": 0,
+          "max_count": 8,
+          "coefficient_of_variation": 0.4230398876350953,
+          "coverage_rate": 0.99,
+          "expected_count": 3.75
+        },
+        "Lulu-B-High-Low": {
+          "mean_count": 3.87,
+          "std_count": 1.6040885262353821,
+          "min_count": 1,
+          "max_count": 8,
+          "coefficient_of_variation": 0.41449315923394886,
+          "coverage_rate": 1.0,
+          "expected_count": 3.75
+        },
+        "Lulu-B-High-High": {
+          "mean_count": 3.62,
+          "std_count": 1.8749933333214814,
+          "min_count": 0,
+          "max_count": 11,
+          "coefficient_of_variation": 0.5179539594810723,
+          "coverage_rate": 0.97,
+          "expected_count": 3.75
+        }
+      },
+      "overall_stats": {
+        "mean_total_users": 30.0,
+        "std_total_users": 0.0,
+        "min_total_users": 30,
+        "max_total_users": 30,
+        "target_users": 30.0
+      }
+    },
+    "improvement_percent": 30.289727086974573
+  },
+  "test_results": [
+    {
+      "0": 4,
+      "1": 3,
+      "7": 9,
+      "5": 2,
+      "4": 2,
+      "6": 8,
+      "3": 1,
+      "2": 1
+    },
+    {
+      "3": 5,
+      "1": 6,
+      "0": 4,
+      "2": 7,
+      "4": 2,
+      "7": 5,
+      "5": 1
+    },
+    {
+      "5": 7,
+      "0": 3,
+      "1": 3,
+      "2": 6,
+      "3": 3,
+      "6": 2,
+      "4": 2,
+      "7": 4
+    },
+    {
+      "4": 6,
+      "6": 4,
+      "0": 6,
+      "7": 1,
+      "2": 3,
+      "3": 3,
+      "1": 4,
+      "5": 3
+    },
+    {
+      "1": 6,
+      "4": 4,
+      "0": 4,
+      "6": 5,
+      "3": 4,
+      "5": 3,
+      "7": 3,
+      "2": 1
+    }
+  ],
+  "scenarios": [
+    {
+      "brand": "Nike",
+      "problem_type": "A",
+      "think_level": "Low",
+      "feel_level": "Low"
+    },
+    {
+      "brand": "Nike",
+      "problem_type": "A",
+      "think_level": "Low",
+      "feel_level": "High"
+    },
+    {
+      "brand": "Nike",
+      "problem_type": "A",
+      "think_level": "High",
+      "feel_level": "Low"
+    },
+    {
+      "brand": "Nike",
+      "problem_type": "A",
+      "think_level": "High",
+      "feel_level": "High"
+    },
+    {
+      "brand": "Lulu",
+      "problem_type": "B",
+      "think_level": "Low",
+      "feel_level": "Low"
+    },
+    {
+      "brand": "Lulu",
+      "problem_type": "B",
+      "think_level": "Low",
+      "feel_level": "High"
+    },
+    {
+      "brand": "Lulu",
+      "problem_type": "B",
+      "think_level": "High",
+      "feel_level": "Low"
+    },
+    {
+      "brand": "Lulu",
+      "problem_type": "B",
+      "think_level": "High",
+      "feel_level": "High"
+    }
+  ],
+  "scenario_labels": [
+    "Nike-A-Low-Low",
+    "Nike-A-Low-High",
+    "Nike-A-High-Low",
+    "Nike-A-High-High",
+    "Lulu-B-Low-Low",
+    "Lulu-B-Low-High",
+    "Lulu-B-High-Low",
+    "Lulu-B-High-High"
+  ]
+}

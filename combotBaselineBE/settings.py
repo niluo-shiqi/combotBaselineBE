@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['3.144.3.186', '3.144.3.102', 'localhost', '127.0.0.1', '0.0.0.0', '3.145.60.102', '3.149.2.252']
+ALLOWED_HOSTS = ['3.144.114.76', 'localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -86,14 +86,6 @@ WSGI_APPLICATION = 'combotBaselineBE.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'postgres',  # Use the database name you created in DBeaver
-    #     'USER': 'admin',  # Use the user you created, or 'postgres' if you skipped this step
-    #     'PASSWORD': 'postgres',
-    #     'HOST': 'database-2.clss86m2c38p.us-west-1.rds.amazonaws.com',  # Or the IP address of your database server
-    #     'PORT': '5432',  # The default port for PostgreSQL
-    # }
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
@@ -124,6 +116,70 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Redis Configuration for Caching and Session Storage
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
+REDIS_DB = int(os.getenv('REDIS_DB', 0))
+REDIS_PASSWORD = os.getenv('REDIS_PASSWORD', None)
+
+# Cache Configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'PASSWORD': REDIS_PASSWORD,
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 50,
+                'retry_on_timeout': True,
+            },
+            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
+        },
+        'KEY_PREFIX': 'combot_cache',
+        'TIMEOUT': 3600,  # 1 hour default timeout
+    },
+    'ml_results': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            'PASSWORD': REDIS_PASSWORD,
+            'CONNECTION_POOL_KWARGS': {
+                'max_connections': 20,
+                'retry_on_timeout': True,
+            },
+            'SERIALIZER': 'django_redis.serializers.json.JSONSerializer',
+        },
+        'KEY_PREFIX': 'ml_results',
+        'TIMEOUT': 7200,  # 2 hours for ML results
+    }
+}
+
+# Session Configuration
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 1800  # 30 minutes
+SESSION_SAVE_EVERY_REQUEST = False
+
+# Celery Configuration for Async Processing
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60  # 30 minutes
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 1000
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
+
+# Performance Settings
+ML_MODEL_CACHE_TIMEOUT = 3600  # 1 hour
+ML_RESULT_CACHE_TIMEOUT = 7200  # 2 hours
+MAX_CONCURRENT_ML_OPERATIONS = 3
+REQUEST_QUEUE_TIMEOUT = 30  # seconds
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -148,17 +204,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Caching configuration for better performance
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'TIMEOUT': 300,  # 5 minutes
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000,
-        }
-    }
-}
+# Remove duplicate cache configuration - using Redis cache above
 
 # Cache middleware
 CACHE_MIDDLEWARE_SECONDS = 300
@@ -223,6 +269,11 @@ LOGGING = {
             'handlers': ['console', 'error_file'],
             'level': 'ERROR',
             'propagate': False,
+        },
+        'chatbot.views': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }

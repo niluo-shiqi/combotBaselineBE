@@ -1,0 +1,137 @@
+[
+  {
+    "batch_id": 1,
+    "total_sessions": 15,
+    "successful_sessions": 15,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 5.460325479507446,
+    "median_response_time": 5.146545171737671,
+    "min_response_time": 0.16994810104370117,
+    "max_response_time": 12.945275068283081,
+    "total_batch_time": 23.199646949768066,
+    "sessions_per_second": 0.6465615633064605,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1473,
+      "usage_percent": 18.858020739982077
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1476,
+      "usage_percent": 18.896428114197928
+    },
+    "initial_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  1.6  9.9 3738264 793528 ?      Sl   06:50   0:08 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  1.4 10.0 3747064 802316 ?      Sl   06:50   0:08 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "final_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  3.0  9.9 3738520 793528 ?      Sl   06:50   0:17 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  2.8 10.0 3747320 802316 ?      Sl   06:50   0:16 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57623  0.0  0.2 242028 19904 ?        R    06:59   0:00 python manage.py shell -c from chatbot.views import memory_manager; print(memory_manager.ml_model is not None)",
+    "memory_increase_mb": 3,
+    "memory_increase_percent": 0.03840737421585061
+  },
+  {
+    "batch_id": 2,
+    "total_sessions": 15,
+    "successful_sessions": 15,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 6.174104102452596,
+    "median_response_time": 6.478010058403015,
+    "min_response_time": 0.18161630630493164,
+    "max_response_time": 13.613595008850098,
+    "total_batch_time": 24.935086011886597,
+    "sessions_per_second": 0.6015619915186767,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1475,
+      "usage_percent": 18.883625656125975
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1473,
+      "usage_percent": 18.858020739982077
+    },
+    "initial_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  2.8  9.9 3738520 793528 ?      Sl   06:50   0:17 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  2.7 10.0 3747320 802316 ?      Sl   06:50   0:16 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57776 25.0  0.4 261384 37280 ?        R    07:00   0:00 python manage.py shell -c from django.db import connection; print(len(connection.queries))",
+    "final_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  4.0  9.9 3738520 793528 ?      Sl   06:50   0:25 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  3.9 10.0 3747320 802316 ?      Sl   06:50   0:24 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "memory_increase_mb": -2,
+    "memory_increase_percent": -0.025604916143898038
+  },
+  {
+    "batch_id": 3,
+    "total_sessions": 15,
+    "successful_sessions": 15,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 6.751612667242686,
+    "median_response_time": 6.595929384231567,
+    "min_response_time": 0.17921209335327148,
+    "max_response_time": 15.369487047195435,
+    "total_batch_time": 28.535063982009888,
+    "sessions_per_second": 0.5256690508721776,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1478,
+      "usage_percent": 18.922033030341826
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1093,
+      "usage_percent": 13.993086672641148
+    },
+    "initial_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  3.8  9.9 3738520 793528 ?      Sl   06:50   0:25 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  3.7 10.0 3747320 802316 ?      Sl   06:50   0:24 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "final_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  4.9  7.3 3536312 591324 ?      Sl   06:50   0:34 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  4.8  7.5 3545112 600496 ?      Sl   06:50   0:33 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "memory_increase_mb": -385,
+    "memory_increase_percent": -4.928946357700678
+  },
+  {
+    "batch_id": 4,
+    "total_sessions": 15,
+    "successful_sessions": 15,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 6.744835392634074,
+    "median_response_time": 6.801129102706909,
+    "min_response_time": 0.17944908142089844,
+    "max_response_time": 14.959108114242554,
+    "total_batch_time": 27.279597759246826,
+    "sessions_per_second": 0.5498614800841602,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1083,
+      "usage_percent": 13.865062091921649
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1753,
+      "usage_percent": 22.442709000128026
+    },
+    "initial_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  4.7  7.3 3536312 591324 ?      Sl   06:50   0:34 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  4.6  7.5 3545112 600496 ?      Sl   06:50   0:33 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "final_processes": "ec2-user   38777  0.0  0.3 248272 25432 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  5.8 11.7 3885932 940816 ?      Sl   06:50   0:44 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  5.7 11.7 3885644 941028 ?      Sl   06:50   0:43 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "memory_increase_mb": 670,
+    "memory_increase_percent": 8.577646908206377
+  },
+  {
+    "batch_id": 5,
+    "total_sessions": 15,
+    "successful_sessions": 15,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 5.811807572841644,
+    "median_response_time": 5.617880344390869,
+    "min_response_time": 0.18501806259155273,
+    "max_response_time": 12.324255228042603,
+    "total_batch_time": 23.413331985473633,
+    "sessions_per_second": 0.6406606291367017,
+    "initial_memory": {
+      "total_mb": 7811,
+      "used_mb": 1756,
+      "usage_percent": 22.481116374343873
+    },
+    "final_memory": {
+      "total_mb": 7811,
+      "used_mb": 1926,
+      "usage_percent": 24.65753424657534
+    },
+    "initial_processes": "ec2-user   38777  0.0  0.3 248272 25436 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  5.6 11.7 3885932 940816 ?      Sl   06:50   0:44 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  5.5 11.7 3885644 941028 ?      Sl   06:50   0:43 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application",
+    "final_processes": "ec2-user   38777  0.0  0.3 248272 25436 ?        Ss   02:13   0:07 python monitor_memory.py\nec2-user   57162  0.0  0.2 244148 22076 ?        Ss   06:50   0:00 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57164  6.4 11.7 3885932 940816 ?      Sl   06:50   0:53 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   57165  6.4 11.7 3885644 941028 ?      Sl   06:50   0:52 /home/ec2-user/CombotBackend/venv/bin/python3 /home/ec2-user/CombotBackend/venv/bin/gunicorn --config /home/ec2-user/CombotBackend/gunicorn.conf.py combotBaselineBE.wsgi:application\nec2-user   58401  133  5.2 3238724 418060 ?      Rl   07:03   0:02 python manage.py shell -c from chatbot.views import memory_manager; print(memory_manager.ml_model is not None)",
+    "memory_increase_mb": 170,
+    "memory_increase_percent": 2.176417872231468
+  }
+]

@@ -1,0 +1,17 @@
+{
+  "test_info": {
+    "total_sessions": 20,
+    "concurrent_users": 5,
+    "total_duration": 83.66200971603394,
+    "start_time": "2025-08-07T00:42:25.510362",
+    "end_time": "2025-08-07T00:43:49.172372"
+  },
+  "results": {
+    "successful_sessions": 20,
+    "failed_sessions": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 3.2568279500000004,
+    "total_memory_impact": 1954.7957000000001,
+    "avg_memory_impact": 97.73978500000001
+  }
+}

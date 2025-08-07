@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import ChatAPIView, InitialMessageAPIView, ClosingMessageAPIView, \
-    LuluInitialMessageAPIView, LuluClosingMessageAPIView, LuluAPIView, RandomEndpointAPIView
+    LuluInitialMessageAPIView, LuluClosingMessageAPIView, LuluAPIView, RandomEndpointAPIView, memory_status
 
 urlpatterns = [
     path('random/', RandomEndpointAPIView.as_view(), name='random_endpoint'),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('lulu/initial/', LuluInitialMessageAPIView.as_view(), name='lulu_initial_message'),
     path('lulu/closing/', LuluClosingMessageAPIView.as_view(), name='lulu_closing_message'),
     path('lulu/', LuluAPIView.as_view(), name='lulu_chatbot_api'),
+    path('memory/', memory_status, name='memory_status'),
 ]

@@ -219,29 +219,30 @@ class LoadTester:
 
 async def main():
     """Main function to run the load test"""
-    # Configuration
-    BASE_URL = "http://18.222.168.169:8000"  # Your EC2 instance
-    NUM_USERS = 10  # Testing with 10 users
-    DURATION = 30  # Reduced from 60 to 30 seconds
-    
     print("🧪 COMBOT BACKEND LOAD TESTER")
     print("=" * 60)
-    print(f"Target: {BASE_URL}")
-    print(f"Users: {NUM_USERS}")
-    print(f"Duration: {DURATION} seconds")
+    print("Target: http://18.222.168.169:8000")
+    print("Users: 8")
+    print("Duration: 30 seconds")
     print("=" * 60)
     
-    # Create and run load tester
-    load_tester = LoadTester(BASE_URL, NUM_USERS, DURATION)
+    # Initialize load tester with 8 users for 30 seconds
+    load_tester = LoadTester(
+        base_url="http://18.222.168.169:8000",
+        num_users=8,
+        duration_seconds=30
+    )
     
-    try:
-        total_time = await load_tester.run_load_test()
-        load_tester.analyze_results(total_time)
-        
-    except KeyboardInterrupt:
-        print("\n🛑 Load test interrupted by user")
-    except Exception as e:
-        print(f"\n❌ Load test failed: {e}")
+    print("\n🚀 Starting load test with 8 concurrent users")
+    print(f"⏱️  Duration: 30 seconds")
+    print(f"🌐 Target: http://18.222.168.169:8000")
+    print("=" * 60)
+    
+    # Run the load test
+    total_time = await load_tester.run_load_test()
+    
+    # Analyze and display results
+    load_tester.analyze_results(total_time)
 
 if __name__ == "__main__":
     asyncio.run(main()) 

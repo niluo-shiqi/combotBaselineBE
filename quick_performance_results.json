@@ -1,0 +1,20 @@
+{
+  "single_result": {
+    "initial_time": 2.4137630462646484,
+    "first_response_time": 4.745239973068237,
+    "total_time": 7.159003019332886
+  },
+  "concurrent_result": {
+    "total_requests": 8,
+    "successful": 8,
+    "failed": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 3.7838125228881836,
+    "median_response_time": 3.725637912750244,
+    "min_response_time": 1.4525542259216309,
+    "max_response_time": 6.971909046173096,
+    "avg_total_time": 3.9870419800281525,
+    "median_total_time": 3.923980951309204
+  },
+  "timestamp": 1754547481.931595
+}

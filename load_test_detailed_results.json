@@ -1,0 +1,1703 @@
+{
+  "test_config": {
+    "base_url": "http://3.144.114.76:8000",
+    "sessions": 5,
+    "users_per_session": 8,
+    "advanced_memory_management": true
+  },
+  "summary": {
+    "total_duration": 93.04256415367126,
+    "total_requests": 160,
+    "successful_requests": 160,
+    "failed_requests": 0,
+    "success_rate": 100.0,
+    "avg_response_time": 0.8419831454753876,
+    "total_successful_users": 40,
+    "total_failed_users": 0,
+    "user_success_rate": 100.0
+  },
+  "sessions": [
+    {
+      "session_num": 1,
+      "duration": 10.940638780593872,
+      "successful_users": 8,
+      "failed_users": 0,
+      "results": [
+        {
+          "session_id": "user_1_1754533950",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.21117115020751953,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.7177958488464355,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.6523351669311523,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.866276741027832,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.936672,
+          "end_time": 1754533958.7927492,
+          "duration": 7.856077194213867
+        },
+        {
+          "session_id": "user_2_1754533950",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.23777008056640625,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.6267349720001221,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.758059024810791,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 2.3411622047424316,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.936752,
+          "end_time": 1754533959.285308,
+          "duration": 8.34855580329895
+        },
+        {
+          "session_id": "user_0_1754533950",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.26682496070861816,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.6559569835662842,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.6036117076873779,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 2.557526111602783,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.9365041,
+          "end_time": 1754533959.729205,
+          "duration": 8.79270076751709
+        },
+        {
+          "session_id": "user_5_1754533950",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.19565701484680176,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.6448781490325928,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.6517069339752197,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.6005330085754395,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.936979,
+          "end_time": 1754533960.220989,
+          "duration": 9.28400993347168
+        },
+        {
+          "session_id": "user_6_1754533950",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.18607687950134277,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.6708238124847412,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 1.174839735031128,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 1.887017011642456,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.937054,
+          "end_time": 1754533960.717619,
+          "duration": 9.780565023422241
+        },
+        {
+          "session_id": "user_4_1754533950",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.22969508171081543,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.8842580318450928,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.8711040019989014,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 1.5836260318756104,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.936924,
+          "end_time": 1754533961.18261,
+          "duration": 10.245686054229736
+        },
+        {
+          "session_id": "user_3_1754533950",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.21998190879821777,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.9756920337677002,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 1.1476178169250488,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 1.7375237941741943,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.936857,
+          "end_time": 1754533961.6324239,
+          "duration": 10.695566892623901
+        },
+        {
+          "session_id": "user_7_1754533950",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20192193984985352,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.8102328777313232,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 1.542417049407959,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.8474068641662598,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533950.937094,
+          "end_time": 1754533961.8768141,
+          "duration": 10.939720153808594
+        }
+      ]
+    },
+    {
+      "session_num": 2,
+      "duration": 10.557193040847778,
+      "successful_users": 8,
+      "failed_users": 0,
+      "results": [
+        {
+          "session_id": "user_7_1754533971",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.18746018409729004,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.5387790203094482,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 1.1763088703155518,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.9821267127990723,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.036414,
+          "end_time": 1754533978.736293,
+          "duration": 7.699879169464111
+        },
+        {
+          "session_id": "user_6_1754533971",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.21706390380859375,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.2955079078674316,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.6557691097259521,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.566072940826416,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.03629,
+          "end_time": 1754533979.384516,
+          "duration": 8.348226070404053
+        },
+        {
+          "session_id": "user_0_1754533971",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20516300201416016,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 1.1088900566101074,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.7912187576293945,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.5615887641906738,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.031082,
+          "end_time": 1754533979.658905,
+          "duration": 8.627823114395142
+        },
+        {
+          "session_id": "user_1_1754533971",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.17015910148620605,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 1.6748738288879395,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.7541069984436035,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.6215250492095947,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.032255,
+          "end_time": 1754533980.599778,
+          "duration": 9.567523002624512
+        },
+        {
+          "session_id": "user_2_1754533971",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.2013719081878662,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.6256990432739258,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.5946638584136963,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.6198608875274658,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.032714,
+          "end_time": 1754533980.69116,
+          "duration": 9.658446073532104
+        },
+        {
+          "session_id": "user_4_1754533971",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.2294330596923828,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 1.0098659992218018,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.9205138683319092,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.6027607917785645,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.034644,
+          "end_time": 1754533981.19072,
+          "duration": 10.156076192855835
+        },
+        {
+          "session_id": "user_3_1754533971",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20720624923706055,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 1.3952579498291016,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.7564818859100342,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.6392600536346436,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.033851,
+          "end_time": 1754533981.319393,
+          "duration": 10.285542011260986
+        },
+        {
+          "session_id": "user_5_1754533971",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.21064281463623047,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.6528298854827881,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.6842920780181885,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.8066539764404297,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533971.035529,
+          "end_time": 1754533981.587208,
+          "duration": 10.551679134368896
+        }
+      ]
+    },
+    {
+      "session_num": 3,
+      "duration": 10.914552211761475,
+      "successful_users": 8,
+      "failed_users": 0,
+      "results": [
+        {
+          "session_id": "user_2_1754533990",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.21903705596923828,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.6487760543823242,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 2.1939189434051514,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.0687737464904785,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.680137,
+          "end_time": 1754533998.821918,
+          "duration": 8.141781091690063
+        },
+        {
+          "session_id": "user_0_1754533990",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.19267511367797852,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.6078989505767822,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 2.0915539264678955,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.1140341758728027,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.679224,
+          "end_time": 1754533999.000041,
+          "duration": 8.320816993713379
+        },
+        {
+          "session_id": "user_4_1754533990",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.24596691131591797,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 1.108016014099121,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 1.60170578956604,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 1.3637399673461914,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.68109,
+          "end_time": 1754533999.690861,
+          "duration": 9.00977087020874
+        },
+        {
+          "session_id": "user_3_1754533990",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.19989919662475586,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 1.0706260204315186,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 1.8339958190917969,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.5700569152832031,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.680584,
+          "end_time": 1754534000.2111301,
+          "duration": 9.530546188354492
+        },
+        {
+          "session_id": "user_7_1754533990",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.23224496841430664,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.600867748260498,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 1.2370102405548096,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.6668832302093506,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.6820538,
+          "end_time": 1754534000.624208,
+          "duration": 9.942154169082642
+        },
+        {
+          "session_id": "user_6_1754533990",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.22534775733947754,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 1.5263402462005615,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 1.6018080711364746,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.7050340175628662,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.6817842,
+          "end_time": 1754534000.689823,
+          "duration": 10.008038759231567
+        },
+        {
+          "session_id": "user_1_1754533990",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.1838080883026123,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 2.0481090545654297,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 1.1992487907409668,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.6201913356781006,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.6795049,
+          "end_time": 1754534001.4419699,
+          "duration": 10.762465000152588
+        },
+        {
+          "session_id": "user_5_1754533990",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20786809921264648,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 1.9248099327087402,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 1.3568830490112305,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.6240558624267578,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754533990.6812952,
+          "end_time": 1754534001.5922618,
+          "duration": 10.910966634750366
+        }
+      ]
+    },
+    {
+      "session_num": 4,
+      "duration": 10.221062898635864,
+      "successful_users": 8,
+      "failed_users": 0,
+      "results": [
+        {
+          "session_id": "user_0_1754534010",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.17998600006103516,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.5680949687957764,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.6391391754150391,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.6178469657897949,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.656972,
+          "end_time": 1754534016.819595,
+          "duration": 6.162623167037964
+        },
+        {
+          "session_id": "user_3_1754534010",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20975089073181152,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.5608260631561279,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.8155808448791504,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.8456981182098389,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.658574,
+          "end_time": 1754534017.709368,
+          "duration": 7.050793886184692
+        },
+        {
+          "session_id": "user_1_1754534010",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.21680593490600586,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.532163143157959,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.6277639865875244,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.5930159091949463,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.657228,
+          "end_time": 1754534018.502938,
+          "duration": 7.845710039138794
+        },
+        {
+          "session_id": "user_7_1754534010",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.22858381271362305,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.6515560150146484,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.5862789154052734,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.5921800136566162,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.6605089,
+          "end_time": 1754534018.830118,
+          "duration": 8.169609069824219
+        },
+        {
+          "session_id": "user_2_1754534010",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.19150590896606445,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.8639519214630127,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.5418219566345215,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.6206200122833252,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.657896,
+          "end_time": 1754534019.408621,
+          "duration": 8.750725030899048
+        },
+        {
+          "session_id": "user_5_1754534010",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.19622516632080078,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.6625220775604248,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.6353809833526611,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.6311318874359131,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.659505,
+          "end_time": 1754534019.7873988,
+          "duration": 9.127893924713135
+        },
+        {
+          "session_id": "user_4_1754534010",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20184898376464844,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.655921220779419,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 0.8816447257995605,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 0.66115403175354,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.659286,
+          "end_time": 1754534020.015164,
+          "duration": 9.355877876281738
+        },
+        {
+          "session_id": "user_6_1754534010",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.22116613388061523,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.8253111839294434,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.9772078990936279,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.580963134765625,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534010.659749,
+          "end_time": 1754534020.877273,
+          "duration": 10.21752405166626
+        }
+      ]
+    },
+    {
+      "session_num": 5,
+      "duration": 11.992683172225952,
+      "successful_users": 8,
+      "failed_users": 0,
+      "results": [
+        {
+          "session_id": "user_2_1754534029",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.1688692569732666,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.9773590564727783,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 1.2737889289855957,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.8153338432312012,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.982631,
+          "end_time": 1754534038.61986,
+          "duration": 8.637228965759277
+        },
+        {
+          "session_id": "user_1_1754534029",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.2177739143371582,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 1.166822910308838,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 2.0996029376983643,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.744431734085083,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.981933,
+          "end_time": 1754534038.6386838,
+          "duration": 8.656750679016113
+        },
+        {
+          "session_id": "user_7_1754534029",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.22203397750854492,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 2.6167590618133545,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.6601407527923584,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.6179237365722656,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.98564,
+          "end_time": 1754534039.451453,
+          "duration": 9.465812921524048
+        },
+        {
+          "session_id": "user_5_1754534029",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "B",
+            "think_level": "Medium",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.19418001174926758,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Lulu package was delayed by 3 weeks and customer service was rude",
+              "response_time": 2.6618268489837646,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.6415338516235352,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 0.5335099697113037,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.9848168,
+          "end_time": 1754534039.846014,
+          "duration": 9.861197233200073
+        },
+        {
+          "session_id": "user_0_1754534029",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.18164706230163574,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 2.85939884185791,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu sent me the wrong size and refused to exchange it",
+              "response_time": 0.6325380802154541,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.5858180522918701,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.9816651,
+          "end_time": 1754534040.58113,
+          "duration": 10.599464893341064
+        },
+        {
+          "session_id": "user_3_1754534029",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "Low"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.23383688926696777,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "My Nike shoes have a manufacturing defect in the sole",
+              "response_time": 2.875756025314331,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 1.171321153640747,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 0.5934040546417236,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.9838898,
+          "end_time": 1754534040.806411,
+          "duration": 10.822521209716797
+        },
+        {
+          "session_id": "user_4_1754534029",
+          "scenario": {
+            "brand": "Nike",
+            "problem_type": "C",
+            "think_level": "High",
+            "feel_level": "Medium"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.20316386222839355,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's website charged me twice for the same order",
+              "response_time": 2.833339214324951,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "Lulu's delivery was late and the package was damaged",
+              "response_time": 0.6409358978271484,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 0.5591928958892822,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.984428,
+          "end_time": 1754534041.130311,
+          "duration": 11.145883083343506
+        },
+        {
+          "session_id": "user_6_1754534029",
+          "scenario": {
+            "brand": "Lulu",
+            "problem_type": "A",
+            "think_level": "Low",
+            "feel_level": "High"
+          },
+          "messages": [
+            {
+              "type": "initial",
+              "response_time": 0.18346381187438965,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike store employee was very unhelpful with my return",
+              "response_time": 2.788769006729126,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "I received a defective Nike shoe that fell apart after 2 weeks",
+              "response_time": 1.0833930969238281,
+              "status": "success"
+            },
+            {
+              "type": "chat",
+              "message": "The Nike app crashed and I lost my order",
+              "response_time": 0.5529580116271973,
+              "status": "success"
+            }
+          ],
+          "start_time": 1754534029.985323,
+          "end_time": 1754534041.973608,
+          "duration": 11.988285064697266
+        }
+      ]
+    }
+  ],
+  "response_times": [
+    0.18607687950134277,
+    0.19565701484680176,
+    0.20192193984985352,
+    0.21117115020751953,
+    0.21998190879821777,
+    0.22969508171081543,
+    0.23777008056640625,
+    0.26682496070861816,
+    0.6267349720001221,
+    0.6559569835662842,
+    0.7177958488464355,
+    0.6448781490325928,
+    0.6708238124847412,
+    0.8102328777313232,
+    0.8842580318450928,
+    0.9756920337677002,
+    0.6036117076873779,
+    0.6523351669311523,
+    0.6517069339752197,
+    0.758059024810791,
+    0.8711040019989014,
+    1.174839735031128,
+    1.1476178169250488,
+    1.542417049407959,
+    1.866276741027832,
+    2.3411622047424316,
+    2.557526111602783,
+    1.6005330085754395,
+    1.887017011642456,
+    1.5836260318756104,
+    1.7375237941741943,
+    0.8474068641662598,
+    0.17015910148620605,
+    0.18746018409729004,
+    0.2013719081878662,
+    0.20516300201416016,
+    0.20720624923706055,
+    0.21064281463623047,
+    0.21706390380859375,
+    0.2294330596923828,
+    0.5387790203094482,
+    0.6256990432739258,
+    0.6528298854827881,
+    1.0098659992218018,
+    1.1088900566101074,
+    1.2955079078674316,
+    1.3952579498291016,
+    1.6748738288879395,
+    1.1763088703155518,
+    0.5946638584136963,
+    0.6557691097259521,
+    0.7912187576293945,
+    0.6842920780181885,
+    0.7564818859100342,
+    0.7541069984436035,
+    0.9205138683319092,
+    0.9821267127990723,
+    0.566072940826416,
+    0.5615887641906738,
+    0.6215250492095947,
+    0.6198608875274658,
+    0.6027607917785645,
+    0.6392600536346436,
+    0.8066539764404297,
+    0.1838080883026123,
+    0.19267511367797852,
+    0.19989919662475586,
+    0.20786809921264648,
+    0.21903705596923828,
+    0.22534775733947754,
+    0.23224496841430664,
+    0.24596691131591797,
+    0.6078989505767822,
+    0.6487760543823242,
+    1.0706260204315186,
+    1.108016014099121,
+    1.5263402462005615,
+    1.600867748260498,
+    1.9248099327087402,
+    2.0481090545654297,
+    2.0915539264678955,
+    2.1939189434051514,
+    1.60170578956604,
+    1.8339958190917969,
+    1.6018080711364746,
+    1.2370102405548096,
+    1.0687737464904785,
+    1.1140341758728027,
+    1.3568830490112305,
+    1.1992487907409668,
+    1.3637399673461914,
+    0.5700569152832031,
+    0.6668832302093506,
+    0.7050340175628662,
+    0.6201913356781006,
+    0.6240558624267578,
+    0.17998600006103516,
+    0.19150590896606445,
+    0.19622516632080078,
+    0.20184898376464844,
+    0.20975089073181152,
+    0.21680593490600586,
+    0.22116613388061523,
+    0.22858381271362305,
+    0.5680949687957764,
+    0.5608260631561279,
+    0.532163143157959,
+    0.6515560150146484,
+    0.6625220775604248,
+    0.8253111839294434,
+    0.655921220779419,
+    0.8639519214630127,
+    0.8155808448791504,
+    0.6391391754150391,
+    0.5862789154052734,
+    0.6277639865875244,
+    0.5418219566345215,
+    0.6178469657897949,
+    0.6353809833526611,
+    0.9772078990936279,
+    0.8816447257995605,
+    0.8456981182098389,
+    0.5930159091949463,
+    0.5921800136566162,
+    0.6206200122833252,
+    0.6311318874359131,
+    0.66115403175354,
+    0.580963134765625,
+    0.1688692569732666,
+    0.18164706230163574,
+    0.18346381187438965,
+    0.19418001174926758,
+    0.20316386222839355,
+    0.2177739143371582,
+    0.22203397750854492,
+    0.23383688926696777,
+    0.9773590564727783,
+    1.166822910308838,
+    2.6167590618133545,
+    2.6618268489837646,
+    2.85939884185791,
+    2.833339214324951,
+    2.875756025314331,
+    2.788769006729126,
+    2.0996029376983643,
+    1.2737889289855957,
+    0.6601407527923584,
+    0.6415338516235352,
+    0.6325380802154541,
+    0.6409358978271484,
+    0.8153338432312012,
+    0.744431734085083,
+    1.171321153640747,
+    1.0833930969238281,
+    0.6179237365722656,
+    0.5335099697113037,
+    0.5858180522918701,
+    0.5934040546417236,
+    0.5591928958892822,
+    0.5529580116271973
+  ]
+}

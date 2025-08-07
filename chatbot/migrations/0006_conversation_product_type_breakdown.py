@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('chatbot', '0005_remove_endpoint_type_and_message_type_log'),
+        ('chatbot', '0005_conversation_endpoint_type_and_more'),
     ]
 
     operations = [

@@ -58,7 +58,7 @@ def when_ready(server):
     server.log.info("Server is ready. Spawning workers")
 
 def worker_int(worker):
-    server.log.info("worker received INT or QUIT signal")
+    worker.log.info("worker received INT or QUIT signal")
 
 def pre_fork(server, worker):
     server.log.info("Worker spawned (pid: %s)", worker.pid)
@@ -67,7 +67,7 @@ def post_fork(server, worker):
     server.log.info("Worker spawned (pid: %s)", worker.pid)
 
 def post_worker_init(worker):
-    server.log.info("Worker initialized (pid: %s)", worker.pid)
+    worker.log.info("Worker initialized (pid: %s)", worker.pid)
 
 def worker_abort(worker):
-    server.log.info("Worker aborted (pid: %s)", worker.pid) 
+    worker.log.info("Worker aborted (pid: %s)", worker.pid) 

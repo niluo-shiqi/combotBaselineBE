@@ -16,7 +16,7 @@ from urllib.parse import quote
 
 from .constants import (
     CONVERSATION_INDICES, DEFAULT_VALUES, ERROR_MESSAGES, SUCCESS_MESSAGES,
-    HTTP_STATUS, RESPONSE_TYPES, PROBLEM_TYPES
+    HTTP_STATUS, RESPONSE_TYPES, PROBLEM_TYPES, MEMORY_THRESHOLDS
 )
 from .exceptions import (
     ValidationError, MemoryError, MLClassificationError, OpenAIError,
@@ -544,8 +544,14 @@ class RandomEndpointAPIView(BaseAPIView):
             class_type = validated_data.get('classType', '')
             message_type_log = validated_data.get('messageTypeLog', [])
             
-            # Get scenario
-            scenario = self.get_scenario_from_session(request)
+            # Get scenario from request data or session
+            scenario = validated_data.get('scenario')
+            if not scenario:
+                scenario = self.get_scenario_from_session(request)
+            else:
+                # Update session with the provided scenario
+                request.session['scenario'] = scenario
+                request.session.save()
             
             # Handle ML classification for initial messages
             if conversation_index in [CONVERSATION_INDICES['INITIAL'], CONVERSATION_INDICES['FIRST_RESPONSE']]:

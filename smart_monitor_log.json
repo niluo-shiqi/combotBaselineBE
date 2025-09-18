@@ -1,0 +1,1 @@
+{"timestamp": "2025-09-17 21:21:08", "memory_percent": 71.9, "memory_used_gb": 6.8593292236328125, "memory_available_gb": 4.501617431640625, "gunicorn_processes": 0, "total_process_memory_mb": 0, "restart_count": 0, "last_restart": null, "safe_to_restart": false, "last_activity": "2025-09-17T21:18:08.552546"}

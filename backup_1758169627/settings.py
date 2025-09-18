@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['3.144.3.186', '3.144.3.102', 'localhost', '127.0.0.1', '0.0.0.0', '3.145.60.102', '3.144.114.76']
+ALLOWED_HOSTS = ['3.144.3.186', '3.144.3.102', 'localhost', '127.0.0.1', '0.0.0.0', '3.145.60.102']
 
 
 # Application definition
@@ -143,11 +143,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = [
-    "http://combot-branding-fe-20250329.s3-website-us-east-1.amazonaws.com",
-    "https://combot-branding-fe-20250329.s3-website-us-east-1.amazonaws.com",
-]
 
 # Google Sheets Integration
 GOOGLE_SHEETS_SPREADSHEET_ID = os.getenv('GOOGLE_SHEETS_SPREADSHEET_ID')
@@ -189,23 +184,3 @@ LOGGING = {
 }
 
 
-
-
-# High concurrency optimizations
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'unique-snowflake',
-        'OPTIONS': {
-            'MAX_ENTRIES': 1000,
-            'CULL_FREQUENCY': 3,
-        }
-    }
-}
-
-# Database connection pooling
-CONN_MAX_AGE = 600
-
-# Memory management
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB

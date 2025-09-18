@@ -11,30 +11,6 @@ import json
 import openai
 import os
 
-# ML Classifier optimization for high concurrency
-import threading
-_ml_classifier = None
-_classifier_lock = threading.Lock()
-
-def get_ml_classifier():
-    """Get or create ML classifier with thread-safe caching"""
-    global _ml_classifier
-    if _ml_classifier is None:
-        with _classifier_lock:
-            if _ml_classifier is None:
-                try:
-                    os.environ["TRANSFORMERS_CACHE"] = "./cache"
-                    os.environ["USE_TF"] = "0"
-                    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-                    _ml_classifier = pipeline("text-classification", model="jpsteinhafel/complaints_classifier")
-                    print("ML classifier loaded successfully")
-                except Exception as e:
-                    print(f"ERROR: Failed to load ML classifier: {e}")
-                    raise e
-    return _ml_classifier
-
-
-
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
